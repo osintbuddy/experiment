@@ -2,8 +2,14 @@
 
 This template should help get you started developing with Tauri, Preact and Typescript in Vite.
 
+
+> [!WARNING]  
+> This is nothing more than ideation for the time being...
+
 ## Link Dump - exploring what others are doing
 
+- https://ieeexplore.ieee.org/abstract/document/6848153
+- https://www.npmjs.com/package/node-seal
 - https://nlnet.nl/project/AVantGaRDe/
 - https://news.ycombinator.com/item?id=33865672 - https://jamsocket.com/blog/you-might-not-need-a-crdt
 - https://github.com/nikgraf/secsync
@@ -32,7 +38,6 @@ This template should help get you started developing with Tauri, Preact and Type
 - https://github.com/coast-team/mute
 - https://github.com/alangibson/awesome-crdt
 - https://www.inkandswitch.com/keyhive/notebook/
-
 
 ## Recommended IDE Setup
 

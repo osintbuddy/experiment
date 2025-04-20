@@ -1,10 +1,12 @@
-# Tauri + Preact + Typescript
-
-This template should help get you started developing with Tauri, Preact and Typescript in Vite.
-
-
 > [!WARNING]  
 > This is nothing more than ideation for the time being...
+
+# Tauri + Preact + Typescript
+
+- [ ] Investigate how running plugins from Rust could work
+  - venv approach: https://doc.rust-lang.org/std/process/struct.Command.html
+  - embedded approach: https://github.com/PyO3/pyo3
+  - ???
 
 ## Link Dump - exploring what others are doing
 

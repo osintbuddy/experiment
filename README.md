@@ -10,6 +10,11 @@
 
 ## Link Dump - exploring what others are doing
 
+- https://github.com/build-trust/ockam
+- https://lib.rs/crates/gardens-rs
+- https://www.iroh.computer/
+- https://github.com/kewbish/kintsugi
+- https://github.com/osvauld/osvauld
 - https://ieeexplore.ieee.org/abstract/document/6848153
 - https://www.npmjs.com/package/node-seal
 - https://nlnet.nl/project/AVantGaRDe/

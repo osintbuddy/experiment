@@ -9,7 +9,8 @@
   - ???
 
 ## Link Dump - exploring what others are doing
-
+- https://electric-sql.com/
+- https://pglite.dev/docs/
 - https://github.com/build-trust/ockam
 - https://lib.rs/crates/gardens-rs
 - https://www.iroh.computer/

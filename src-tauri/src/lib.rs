@@ -1,54 +1,18 @@
 use std::env;
-use std::process::Command;
-
-// Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
+mod client;
+mod db;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
-        .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet, run_transform])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
-}
-
-fn get_executable_file_path() -> String {
-  // FIXME: get path relative to AppImage or allow user to set their paths (venv & plugins paths)
- let cwd = std::env::current_exe();
- return cwd.expect("not str").into_os_string().into_string().unwrap();
-} 
-
-#[tauri::command]
-fn run_transform(source: &str) {
-  let exe_path = get_executable_file_path();
-
-  println!("p: {}", exe_path);
-  println!("Transform was invoked from JavaScript!");
-  println!("Running with: {source}");
-
-  let plugins_path = format!("{exe_path}plugins");
-  let venv_py = format!("{exe_path}venv/bin/python3");
-  let venv_ob = format!("{exe_path}venv/bin/ob");
-
-  let output = Command::new(venv_py)
-  .env("PYTHONHOME", "")
-  .env("PYTHONPATH", &venv_ob)
-  .arg(venv_ob)
-  .arg("run")
-  .arg("--plugins")
-  .arg(plugins_path)
-  .arg("--transform")
-  .arg(source)
-  .output()
-  .expect("failed to execute process");
-
-
-  println!("status: {}", output.status);
-  println!("out: {}", String::from_utf8_lossy(&output.stdout));
-  println!("stderr: {}", String::from_utf8_lossy(&output.stderr));
-  assert!(output.status.success());
+  tauri::Builder::default()
+  .setup(|_app| {
+    db::init();
+    Ok(())
+  })
+  .plugin(tauri_plugin_opener::init())
+  .plugin(tauri_plugin_fs_pro::init())
+  .plugin(tauri_plugin_store::Builder::default().build())
+  .invoke_handler(tauri::generate_handler![client::run_transform])
+  .run(tauri::generate_context!())
+  .expect("error while running tauri application");
 }

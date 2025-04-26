@@ -4,8 +4,6 @@ import PublicLayout from "./components/PublicLayout";
 import AppLayout from "./components/AppLayout";
 import { TourProvider } from "@reactour/tour";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
-
-// Public routes
 import LandingPage from "./LandingPage"
 
 
@@ -31,7 +29,6 @@ const router = createBrowserRouter([
 
 
 export default function AppRoutes(): JSX.Element {
-
   return (
     <TourProvider
       onClickClose={({ setCurrentStep, currentStep, steps, setIsOpen }: any) => {

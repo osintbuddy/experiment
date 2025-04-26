@@ -6,10 +6,8 @@ import PublicNavbar from './PublicNavbar';
 export default function PublicLayout(): JSX.Element {
   return (
     <>
+      <Outlet />
       <PublicNavbar />
-      <main id="main">
-        <Outlet />
-      </main>
       <ToastContainer
         aria-label=""
         position='bottom-right'

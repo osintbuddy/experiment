@@ -151,25 +151,17 @@ export default function PublicNavbar(): JSX.Element {
   return (
     <header
       className={classNames(
-        'sticky w-full  top-0 z-50 flex sm:flex-wrap items-center justify-between flex-nowrap px-4 py-2.5 shadow-md shadow-slate-900/5 transition duration-500 dark:shadow-none sm:px-6 lg:px-8',
+        'absolute w-full  bottom-3 z-50 flex sm:flex-wrap items-end justify-between flex-nowrap shadow-md shadow-slate-900/5 transition duration-500 dark:shadow-none px-4',
         isScrolled
           ? 'dark:bg-slate-800/95 dark:backdrop-blur dark:[@supports(backdrop-filter:blur(0))]:bg-slate-900/75'
           : 'dark:bg-transparent'
       )}
     >
-      <div className="flex lg:hidden">
-        <Link to="/">
-          <img className=" h-7 w-auto fill-slate-700 dark:fill-sky-100 block" src={Logo} />
-        </Link>
-        {/* @todo add mobile navigation */}
-      </div>
       <div className="relative flex flex-grow basis-0 items-center">
         <Link to="/">
-          <img className="hidden h-9  fill-slate-700 dark:fill-sky-100 lg:block" src={Logo} />
+          {/* @ts-ignore */}
+          <img className="hidden h-10 fill-slate-600 lg:block" src={Logo} />
         </Link>
-      </div>
-      <div className="">
-        {/* <Search /> */}
       </div>
       <div className="ml-auto relative flex basis-0 justify-end mr-2 gap-6 sm:gap-8 md:flex-grow">
         <a href="https://discord.gg/gsbbYHA3K3" className="group" aria-label="Discord">

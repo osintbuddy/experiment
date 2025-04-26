@@ -5,6 +5,29 @@
   --font-display: "Lexend";
   --font-code: "Fira Code", "monospace";
 
+  --color-danger: #D8454A;
+  --color-danger-50: #F7D9DA;
+  --color-danger-100: #F2C4C5;
+  --color-danger-200: #E99A9C;
+  --color-danger-300: #E16F73;
+  --color-danger-400: #D8454A;
+  --color-danger-500: #C1292E;
+  --color-danger-600: #972024;
+  --color-danger-700: #6D171A;
+  --color-danger-800: #430E10;
+  --color-danger-900: #190506;
+
+  --color-success-50: #7BCB87;
+  --color-success-100: #74C980;
+  --color-success-200: #65C373;
+  --color-success-300: #56BD66;
+  --color-success-400: #48B758;
+  --color-success-500: #42A951;
+  --color-success-600: #3B9649;
+  --color-success-700: #348440;
+  --color-success-800: #2C7237;
+  --color-success-900: #255F2E;
+
   --color-primary: #1628FF;
   --color-primary-50: #5E6AFF;
   --color-primary-100: #5460FF;
@@ -17,6 +40,17 @@
   --color-primary-800: #000977;
   --color-primary-900: #000649;
   --color-primary-950: #000432;
+
+  --color-alert-50: #FFD4A8;
+  --color-alert-100: #FFC78E;
+  --color-alert-200: #FFAE5B;
+  --color-alert-300: #FF9528;
+  --color-alert-400: #F47C00;
+  --color-alert-500: #C16200;
+  --color-alert-600: #8E4800;
+  --color-alert-700: #5B2E00;
+  --color-alert-800: #422200;
+  --color-alert-900: #2E1700;
 
   --color-slate: #94a3b8;
   --color-slate-50: #f8fafc;
@@ -85,10 +119,11 @@
 *,
 :after,
 :before {
-  @apply box-border ;
+  @apply box-border;
 }
 
 html {
+  z-index: 0;
   --grid-space: 1px;
   --grid-gap: 3px;
   --grid-size: 80px;
@@ -130,11 +165,39 @@ html::after {
     radial-gradient(142% 91% at 83% 7%, hsla(234, 100%, 19%, 0.109) 1%, rgba(153, 0, 255, 0.126) 99%),
     radial-gradient(142% 91% at -6% 74%, rgba(0, 42, 255, 0.116) 1%, rgba(3, 154, 84, 0.075) 99%),
     radial-gradient(142% 91% at 111% 84%, #1144ed0f 25%, rgba(69, 34, 150, 0.045) 95%);
+    z-index: -1;
 }
+
 
 button {
   cursor: pointer;
 }
 :disabled {
   cursor: default;
+}
+
+.btn-primary {
+  @apply ring-1 ring-primary-400/95 whitespace-nowrap focus:ring-primary-300/90 hover:ring-primary-300/80 text-left text-sm font-medium tracking-wide hover:text-slate-300/70 text-slate-300/80 scale-100 hover:scale-[99%]  flex items-center border hover:ring-inset border-primary-400/95 focus:border-primary-300/90 hover:border-primary-300/80 py-2 px-5 font-display rounded-md  hover:shadow justify-center transition-all duration-75 ease-linear hover:stroke-primary-300/80 stroke-primary-400/95 ;
+}
+
+.btn-primary-solid {
+  @apply ring-1 ring-primary-400/95 hover:ring-primary-300/80 whitespace-nowrap text-left text-sm font-medium tracking-wide  flex scale-100 hover:scale-[99%] items-center hover:ring-inset bg-primary-400/95 hover:bg-primary-300/80 focus:bg-primary-300/90 py-2 px-5 font-display rounded-md  hover:shadow justify-center transition-all duration-75 ease-linear text-slate-200/90 hover:text-slate-200 hover:stroke-primary-300/80 stroke-primary-400/95
+}
+.btn-primary-solid:disabled {
+  @apply !bg-mirage-400 !ring-mirage-400 !text-slate-500 hover:pointer-events-none
+}
+.btn-primary-solid svg,
+.btn-primary svg,
+.btn-danger svg {
+  @apply ml-4 w-5 h-5 transition-transform duration-150 ease-out stroke-none
+}
+
+.btn-primary-solid:hover svg,
+.btn-primary:hover svg,
+.btn-danger:hover svg {
+  @apply ml-4 w-5 h-5 scale-[106%] !ease-linear
+}
+
+.btn-danger {
+  @apply ring-1 hover:shadow ring-danger-500/70 hover:ring-danger-500 text-left text-sm font-semibold text-danger-500/70 hover:text-danger-500 scale-100 hover:scale-[99%] flex items-center border hover:ring-inset border-danger-500/70 hover:border-danger-500 py-2 px-3 rounded-md  font-display justify-center transition-all duration-75 ease-linear
 }

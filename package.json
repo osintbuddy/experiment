@@ -17,6 +17,7 @@
     "@headlessui/react": "^2.2.2",
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^5.0.1",
+    "@libsql/client": "^0.15.4",
     "@react-sigma/core": "^5.0.2",
     "@react-sigma/graph-search": "^5.0.3",
     "@react-sigma/layout-circlepack": "^5.0.2",
@@ -29,7 +30,10 @@
     "@tailwindcss/vite": "^4.1.4",
     "@tarii/3d-earth": "^1.0.3",
     "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-dialog": "~2",
+    "@tauri-apps/plugin-fs": "~2",
     "@tauri-apps/plugin-opener": "^2",
+    "@tauri-apps/plugin-store": "^2.2.0",
     "@uiw/codemirror-theme-aura": "^4.23.10",
     "@uiw/react-codemirror": "^4.23.10",
     "@xyflow/react": "^12.6.0",
@@ -55,7 +59,6 @@
     "react-virtualized": "^9.22.6",
     "sigma": "^3.0.1",
     "tailwindcss": "^4.1.4",
-    "tauri-plugin-store-api": "github:tauri-apps/tauri-plugin-store#v2",
     "three": "^0.175.0",
     "vite-plugin-top-level-await": "^1.5.0",
     "vite-plugin-wasm": "^3.4.1",
@@ -67,6 +70,7 @@
     "@tauri-apps/cli": "^2",
     "@types/three": "^0.175.0",
     "typescript": "~5.6.2",
-    "vite": "^6.0.3"
+    "vite": "^6.0.3",
+    "vite-plugin-svgr": "^4.3.0"
   }
 }

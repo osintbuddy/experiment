@@ -1,5 +1,5 @@
 {
-  "name": "osib",
+  "name": "osintbuddy",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -28,7 +28,6 @@
     "@reactour/tour": "^3.7.0",
     "@reduxjs/toolkit": "^2.7.0",
     "@tailwindcss/vite": "^4.1.4",
-    "@tarii/3d-earth": "^1.0.3",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-dialog": "~2",
     "@tauri-apps/plugin-fs": "~2",
@@ -47,6 +46,7 @@
     "graphology": "^0.26.0",
     "graphology-types": "^0.24.8",
     "preact": "^10.25.1",
+    "preact-compat": "link:preact/compat",
     "react-grid-layout": "^1.5.1",
     "react-hook-form": "^7.56.1",
     "react-hotkeys": "^2.0.0",
@@ -60,8 +60,6 @@
     "sigma": "^3.0.1",
     "tailwindcss": "^4.1.4",
     "three": "^0.175.0",
-    "vite-plugin-top-level-await": "^1.5.0",
-    "vite-plugin-wasm": "^3.4.1",
     "webcola": "^3.4.0",
     "yup": "^1.6.1"
   },
@@ -71,6 +69,8 @@
     "@types/three": "^0.175.0",
     "typescript": "~5.6.2",
     "vite": "^6.0.3",
-    "vite-plugin-svgr": "^4.3.0"
+    "vite-plugin-svgr": "^4.3.0",
+    "vite-plugin-top-level-await": "^1.5.0",
+    "vite-plugin-wasm": "^3.4.1"
   }
 }

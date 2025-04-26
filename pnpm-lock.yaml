@@ -62,9 +62,6 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.1.4
         version: 4.1.4(vite@6.3.2(@types/node@22.14.1)(jiti@2.4.2)(lightningcss@1.29.2)(terser@5.39.0))
-      '@tarii/3d-earth':
-        specifier: ^1.0.3
-        version: 1.0.3
       '@tauri-apps/api':
         specifier: ^2
         version: 2.5.0
@@ -119,6 +116,9 @@ importers:
       preact:
         specifier: ^10.25.1
         version: 10.26.5
+      preact-compat:
+        specifier: link:preact/compat
+        version: link:preact/compat
       react-grid-layout:
         specifier: ^1.5.1
         version: 1.5.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -158,12 +158,6 @@ importers:
       three:
         specifier: ^0.175.0
         version: 0.175.0
-      vite-plugin-top-level-await:
-        specifier: ^1.5.0
-        version: 1.5.0(@swc/helpers@0.5.17)(rollup@4.40.0)(vite@6.3.2(@types/node@22.14.1)(jiti@2.4.2)(lightningcss@1.29.2)(terser@5.39.0))
-      vite-plugin-wasm:
-        specifier: ^3.4.1
-        version: 3.4.1(vite@6.3.2(@types/node@22.14.1)(jiti@2.4.2)(lightningcss@1.29.2)(terser@5.39.0))
       webcola:
         specifier: ^3.4.0
         version: 3.4.0
@@ -189,6 +183,12 @@ importers:
       vite-plugin-svgr:
         specifier: ^4.3.0
         version: 4.3.0(rollup@4.40.0)(typescript@5.6.3)(vite@6.3.2(@types/node@22.14.1)(jiti@2.4.2)(lightningcss@1.29.2)(terser@5.39.0))
+      vite-plugin-top-level-await:
+        specifier: ^1.5.0
+        version: 1.5.0(@swc/helpers@0.5.17)(rollup@4.40.0)(vite@6.3.2(@types/node@22.14.1)(jiti@2.4.2)(lightningcss@1.29.2)(terser@5.39.0))
+      vite-plugin-wasm:
+        specifier: ^3.4.1
+        version: 3.4.1(vite@6.3.2(@types/node@22.14.1)(jiti@2.4.2)(lightningcss@1.29.2)(terser@5.39.0))
 
 packages:
 
@@ -1272,9 +1272,6 @@ packages:
   '@tanstack/virtual-core@3.13.6':
     resolution: {integrity: sha512-cnQUeWnhNP8tJ4WsGcYiX24Gjkc9ALstLbHcBj1t3E7EimN6n6kHH+DPV4PpDnuw00NApQp+ViojMj1GRdwYQg==}
 
-  '@tarii/3d-earth@1.0.3':
-    resolution: {integrity: sha512-TxdMOt/21GxALLXqtGo0l3sjm1+9TCh5YgUqzRSz+O+PQKl6sQW5ukiCAPxK3QAjcqxGxZDIOW1uRpHj/hpaEw==}
-
   '@tauri-apps/api@2.5.0':
     resolution: {integrity: sha512-Ldux4ip+HGAcPUmuLT8EIkk6yafl5vK0P0c0byzAKzxJh7vxelVtdPONjfgTm96PbN24yjZNESY8CKo8qniluA==}
 
@@ -1476,10 +1473,6 @@ packages:
 
   '@types/stats.js@0.17.3':
     resolution: {integrity: sha512-pXNfAD3KHOdif9EQXZ9deK82HVNaXP5ZIF5RP2QG6OQFNTaY2YIetfrE9t528vEreGQvEPRDDc8muaoYeK0SxQ==}
-
-  '@types/three@0.103.2':
-    resolution: {integrity: sha512-zhtf0Qs5wLJpIn1+VWCpzSgpKayj/GSWZ6woiuz09FW59KEDeLpnBkYz6lbblVpRmGdlnG8nd0unaASshOvcXw==}
-    deprecated: This is a stub types definition. three provides its own type definitions, so you do not need this installed.
 
   '@types/three@0.175.0':
     resolution: {integrity: sha512-ldMSBgtZOZ3g9kJ3kOZSEtZIEITmJOzu8eKVpkhf036GuNkM4mt0NXecrjCn5tMm1OblOF7dZehlaDypBfNokw==}
@@ -2683,9 +2676,6 @@ packages:
     resolution: {integrity: sha512-LBAhFyLho16harJoWMg/nZsQYgTrg5jXOn2nCYjRUcZZEdE3qa2zb8QEDRUGVZBW4rlazf2fxkg8tztybTaqWw==}
     engines: {node: '>=10'}
     hasBin: true
-
-  three@0.107.0:
-    resolution: {integrity: sha512-vqbKJRLBEviPVa7poEzXocobicwxzsctr5mnymA7n8fEzcVS49rYP0RrwqZ98JqujRoruK+/YzcchNpRP+kXsQ==}
 
   three@0.175.0:
     resolution: {integrity: sha512-nNE3pnTHxXN/Phw768u0Grr7W4+rumGg/H6PgeseNJojkJtmeHJfZWi41Gp2mpXl1pg1pf1zjwR4McM1jTqkpg==}
@@ -4151,11 +4141,6 @@ snapshots:
 
   '@tanstack/virtual-core@3.13.6': {}
 
-  '@tarii/3d-earth@1.0.3':
-    dependencies:
-      '@types/three': 0.103.2
-      three: 0.107.0
-
   '@tauri-apps/api@2.5.0': {}
 
   '@tauri-apps/cli-darwin-arm64@2.5.0':
@@ -4325,10 +4310,6 @@ snapshots:
       csstype: 3.1.3
 
   '@types/stats.js@0.17.3': {}
-
-  '@types/three@0.103.2':
-    dependencies:
-      three: 0.175.0
 
   '@types/three@0.175.0':
     dependencies:
@@ -5545,8 +5526,6 @@ snapshots:
       acorn: 8.14.1
       commander: 2.20.3
       source-map-support: 0.5.21
-
-  three@0.107.0: {}
 
   three@0.175.0: {}
 

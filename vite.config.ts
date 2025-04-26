@@ -12,6 +12,14 @@ const host = process.env.TAURI_DEV_HOST;
 export default defineConfig(async () => ({
   plugins: [svgr(), wasm(), topLevelAwait(), tailwindcss(), preact()],
   clearScreen: false,
+  resolve: {
+    alias: {
+      "react": "preact/compat",
+      "react-dom/test-utils": "preact/test-utils",
+      "react-dom": "preact/compat",     // Must be below test-utils
+      "react/jsx-runtime": "preact/jsx-runtime"
+    }
+  },
   server: {
     port: 1420,
     strictPort: true,

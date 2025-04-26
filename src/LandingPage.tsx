@@ -3,12 +3,13 @@ import { open } from '@tauri-apps/plugin-dialog';
 import { useEffect, useState } from "preact/hooks";
 import { LazyStore } from '@tauri-apps/plugin-store';
 import { invoke } from "@tauri-apps/api/core";
-
+import { Description, Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
 // @ts-ignore
 const store = new LazyStore(".settings.json");
 
 export default function LandingPage() {
   console.log('s', store)
+  let [isOpen, setIsOpen] = useState(false)
   const [venvValue, setVenvValue] = useState<string>("");
   const [pluginsValue, setPluginsValue] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -19,7 +20,7 @@ export default function LandingPage() {
     let venvPath: string | undefined = await store.get("venv_path")
     if (venvPath) setVenvValue(venvPath)
       let pluginsPath: string | undefined = await store.get("plugins_path")
-    if (pluginsPath) setVenvValue(pluginsPath)
+    if (pluginsPath) setPluginsValue(pluginsPath)
   } 
    f()
 
@@ -27,6 +28,20 @@ export default function LandingPage() {
 
   return (
     <>
+    <button onClick={() => setIsOpen(true)}>Open dialog</button>
+      <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
+        <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
+          <DialogPanel className="max-w-lg space-y-4 border bg-white p-12">
+            <DialogTitle className="font-bold">Deactivate account</DialogTitle>
+            <Description>This will permanently deactivate your account</Description>
+            <p>Are you sure you want to deactivate your account? All of your data will be permanently removed.</p>
+            <div className="flex gap-4">
+              <button onClick={() => setIsOpen(false)}>Cancel</button>
+              <button onClick={() => setIsOpen(false)}>Deactivate</button>
+            </div>
+          </DialogPanel>
+        </div>
+      </Dialog>
       <main className="mt-40 flex items-center w-full flex-col h-full relative ">
 
         <section className="flex flex-col bg-gray-700/55 backdrop-blur-sm rounded-lg shadow-sm shadow-gray-600/60 py-6 p-10 min-w-[60rem]">
@@ -85,7 +100,6 @@ export default function LandingPage() {
                       multiple: false,
                       directory: true,
                     });
- await invoke("list_encrypted_databases")
                     if (venvDirectory) {
                       await store.set("venv_path", venvDirectory)
                       setVenvValue(venvDirectory)

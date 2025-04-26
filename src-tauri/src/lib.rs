@@ -24,7 +24,7 @@ pub fn run() {
         })
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_fs_pro::init())
-        .invoke_handler(tauri::generate_handler![client::run_transform, list_encrypted_databases])
+        .invoke_handler(tauri::generate_handler![client::run_transform, ls_dbs])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -37,7 +37,7 @@ struct File {
 }
 
 #[tauri::command]
-fn list_encrypted_databases()  {
+fn ls_dbs()  {
     let db_path = db::get_data_path();
     println!("{}", db_path);
     let glob_path = db_path + "*.db";

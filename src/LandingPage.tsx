@@ -16,28 +16,32 @@ export default function LandingPage() {
   const [hidePassword, setHidePassword] = useState<"text" | "password">("password")
 
   useEffect(() => {
-   async function f() {
-    let venvPath: string | undefined = await store.get("venv_path")
-    if (venvPath) setVenvValue(venvPath)
-      let pluginsPath: string | undefined = await store.get("plugins_path")
-    if (pluginsPath) setPluginsValue(pluginsPath)
-  } 
-   f()
+   async function doOnce() {
+      let venvPath: string | undefined = await store.get("venv_path")
+      if (venvPath) setVenvValue(venvPath)
+        let pluginsPath: string | undefined = await store.get("plugins_path")
+      if (pluginsPath) setPluginsValue(pluginsPath)
+      console.log(await invoke("ls_dbs"))
+    } 
+   doOnce()
 
   }, [])
 
   return (
     <>
-    <button onClick={() => setIsOpen(true)}>Open dialog</button>
+
       <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
-        <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-          <DialogPanel className="max-w-lg space-y-4 border bg-white p-12">
-            <DialogTitle className="font-bold">Deactivate account</DialogTitle>
-            <Description>This will permanently deactivate your account</Description>
-            <p>Are you sure you want to deactivate your account? All of your data will be permanently removed.</p>
-            <div className="flex gap-4">
-              <button onClick={() => setIsOpen(false)}>Cancel</button>
-              <button onClick={() => setIsOpen(false)}>Deactivate</button>
+        <div className="fixed inset-0 flex w-screen items-center bg-gray-900/80 backdrop-blur-lg justify-center p-4">
+          <DialogPanel className="flex flex-col bg-gray-600/95   rounded-lg shadow-sm shadow-gray-600/60 py-10 px-15">
+            <DialogTitle className="text-slate-300 font-bold text-lg my-1">Create database</DialogTitle>
+            <Description className="text-slate-300 mb-14">This will create an encrypted database, set a <br/>password to keep your data safe</Description>
+            
+            <h3 class="text-slate-400 text-lg relative w-full mb-6"><span class="text-sm text-slate-600 absolute -top-6 -left-0.5">Password</span>
+            <input value={venvValue} type="password" class="hover:border-primary border border-slate-900 focus:bg-mirage-900/60 bg-mirage-300/20 w-full transition-colors duration-150 px-2 rounded outline-1 outline-slate-900 text-slate-300/80 focus:outline-2 focus:stroke-primary focus:outline-primary py-1" placeholder="./Your python folder/.../" />
+
+            </h3><div className="flex gap-4 self-end">
+              <button className="btn-danger" onClick={() => setIsOpen(false)}>Cancel</button>
+              <button className="btn-primary-solid mb-0.5" onClick={() => setIsOpen(false)}>Create</button>
             </div>
           </DialogPanel>
         </div>
@@ -51,7 +55,7 @@ export default function LandingPage() {
               <QuestionMarkCircleIcon title="todo" className="h-5 text-slate-600 -top-1 absolute -right-4" />
             </h2>
             <div className="flex">
-              <button className="btn-primary-solid">
+              <button onClick={() => setIsOpen(true)} className="btn-primary-solid">
                 Create database
                 <LockClosedIcon />
               </button>

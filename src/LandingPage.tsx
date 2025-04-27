@@ -19,7 +19,7 @@ export default function LandingPage() {
    async function doOnce() {
       let venvPath: string | undefined = await store.get("venv_path")
       if (venvPath) setVenvValue(venvPath)
-        let pluginsPath: string | undefined = await store.get("plugins_path")
+      let pluginsPath: string | undefined = await store.get("plugins_path")
       if (pluginsPath) setPluginsValue(pluginsPath)
       console.log(await invoke("ls_dbs"))
     } 

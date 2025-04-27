@@ -35,25 +35,19 @@ struct File {
     name: String,
     mtime: u64
 }
-#[derive(Serialize, Deserialize)]
-struct Files {
-    files: Vec<File>
-}
 
 #[tauri::command]
-fn ls_dbs() -> Files  {
-    let mut result: Files = Files {
-        files: Vec::new()
-    };
+fn ls_dbs() -> Vec<File>  {
+    let mut files: Vec<File> = Vec::new();
     let glob_path = db::get_data_path() + "*.db";
     for file in  glob(&glob_path).expect("Failed to read glob pattern") {
         let file_str = file.unwrap().display().to_string();
-        result.files.push(File {
+        files.push(File {
             name: file_str.clone(),
             mtime: file_modified_time_in_seconds(file_str.as_str())
         });
     }
-    return result;
+    return files;
 }
 
 fn file_modified_time_in_seconds(path: &str) -> u64 {

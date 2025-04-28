@@ -1,16 +1,12 @@
 use std::env;
-use tauri::Wry;
-use tauri::ipc::{IpcResponse, Response};
-use tauri_plugin_store::StoreExt;
-use serde_json::{json, Value};
-mod client;
-mod db;
-use glob::glob;
-use serde::{Deserialize, Serialize};
 use std::fs;
 use std::time::UNIX_EPOCH;
-// use sqlx::sqlite::SqliteQueryResult;
-// use sqlx::{query, Connection, SqliteConnection};
+use glob::glob;
+use tauri_plugin_store::StoreExt;
+use serde::{Deserialize, Serialize};
+
+mod client;
+mod db;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -40,7 +36,7 @@ struct File {
 fn ls_dbs() -> Vec<File>  {
     let mut files: Vec<File> = Vec::new();
     let glob_path = db::get_data_path() + "*.db";
-    for file in  glob(&glob_path).expect("Failed to read glob pattern") {
+    for file in glob(&glob_path).expect("Failed to read glob pattern") {
         let file_str = file.unwrap().display().to_string();
         files.push(File {
             name: file_str.clone(),

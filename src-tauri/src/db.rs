@@ -2,9 +2,12 @@ use anyhow::Ok;
 use dirs;
 use sqlx::sqlite::SqliteConnectOptions;
 use sqlx::ConnectOptions;
+use std::fs;
 use std::str::FromStr;
 
 pub fn init() {
+    let data_path = get_data_path();
+    fs::create_dir_all(data_path).expect("create dir all err");
     create_encrypted_database("osib", "osib").expect("err db on init")
 }
 

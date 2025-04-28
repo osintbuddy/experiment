@@ -14,7 +14,7 @@ function DatabaseOption({ name, mtime }: any) {
     <li className="text-slate-400 px-4 h-15  relative border-slate-900 bg-mirage-300/20 hover:bg-mirage-300/30 transition-colors duration-150 ease-in-out hover:bg-mirage-4000/25 border-y py-1.5 flex items-center justify-between">
       <h3 class="text-slate-400 w-52 text-lg relative top-2"><span class="text-sm text-slate-600 absolute -top-4 -left-0.5">Filename</span>{name}
       </h3>
-      <h3 class="text-slate-400 w-64 text-lg relative top-2"><span class="text-sm text-slate-600 absolute -top-4 -left-0.5">Modified</span>25 Apr, 2025 12:46AM
+      <h3 class="text-slate-400 w-64 text-lg relative top-2"><span class="text-sm text-slate-600 absolute -top-4 -left-0.5">Modified</span>{mtime}
       </h3>
       <div className="relative flex">
         <input onInput={(e) => setPassword(e.currentTarget.value)} type={hidePassword} class="mr-4 -top-4 hover:border-primary border w-64 border-slate-800 focus:bg-mirage-900/60 from-mirage-300/20 to-mirage-400/20 bg-linear-to-br not-last-of-type:text-lg transition-colors duration-150 px-3 rounded outline-1 outline-slate-900 focus:outline-2  focus:outline-primary py-1 border-r-none" placeholder="Your password" value={password} />
@@ -53,7 +53,6 @@ export default function LandingPage() {
   }, [])
 
   const [createPassword, setCreatePassword] = useState<string>("");
-
   return (
     <>
 
@@ -94,7 +93,10 @@ export default function LandingPage() {
                 </h3>
               </li>
             ) : databases.map((db) => 
-              <DatabaseOption name={db.name.split('/').slice(-1)} mtime={db.mtime} />
+              <DatabaseOption
+                name={db.name.split('/').slice(-1)}
+                // mtime unix seconds to js date milliseconds
+                mtime={new Date(db.mtime * 1000).toLocaleString()} />
             )}
           </ul>
           <hr className="pt-6 text-mirage-400/60" />

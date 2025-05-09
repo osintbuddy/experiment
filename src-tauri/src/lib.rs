@@ -4,6 +4,7 @@ use std::time::UNIX_EPOCH;
 use glob::glob;
 use tauri_plugin_store::StoreExt;
 use serde::{Deserialize, Serialize};
+use sqlx;
 
 mod client;
 mod db;
@@ -15,13 +16,14 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_store::Builder::default().build())
         .setup(|_app| {
-            _app.store(".settings.json")?;
-            db::init();
+            let _store = _app.store(".settings.json")?;
+            // https://github.com/tauri-apps/tauri/discussions/7596
+            // db::init();
             Ok(())
         })
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_fs_pro::init())
-        .invoke_handler(tauri::generate_handler![client::run_transform, ls_dbs])
+        .invoke_handler(tauri::generate_handler![client::run_transform, ls_dbs, unlock_db, create_db])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -29,7 +31,7 @@ pub fn run() {
 #[derive(Deserialize, Serialize)]
 struct File {
     name: String,
-    mtime: u64
+    mtime: u128
 }
 
 #[tauri::command]
@@ -46,12 +48,25 @@ fn ls_dbs() -> Vec<File>  {
     return files;
 }
 
-fn file_modified_time_in_seconds(path: &str) -> u64 {
+fn file_modified_time_in_seconds(path: &str) -> u128 {
     fs::metadata(path)
     .unwrap()
     .modified()
     .unwrap()
     .duration_since(UNIX_EPOCH)
     .unwrap()
-    .as_secs()
+    .as_millis()
+}
+
+
+#[tauri::command]
+async fn unlock_db(filename: String, password: String) {
+    let conn = db::get_db(&filename, &password).await;
+    let result = sqlx::query("SELECT 1 as v").execute(&conn).await.unwrap();
+    println!("Result {:?}", result);
+}
+
+#[tauri::command]
+async fn create_db(filename: String, password: String) {
+    db::get_db(&filename, &password).await;
 }

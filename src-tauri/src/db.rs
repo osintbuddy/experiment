@@ -1,14 +1,16 @@
-use anyhow::Ok;
 use dirs;
 use sqlx::sqlite::SqliteConnectOptions;
-use sqlx::ConnectOptions;
+use sqlx::{Pool, Sqlite, SqlitePool};
+use sqlx;
 use std::fs;
+use std::path::Path;
 use std::str::FromStr;
 
-pub fn init() {
+
+pub async fn init() {
     let data_path = get_data_path();
     fs::create_dir_all(data_path).expect("create dir all err");
-    create_encrypted_database("osib", "osib").expect("err db on init")
+    get_db("osib", "osib").await;
 }
 
 pub fn get_data_path() -> String {
@@ -16,16 +18,17 @@ pub fn get_data_path() -> String {
     format!("{}/osintbuddy/", &data_dir.to_str().unwrap().to_string())
 }
 
-pub fn create_encrypted_database(filename: &str, password: &str) -> anyhow::Result<()> {
-    let db_path = get_data_path() + filename + ".db";
-    let _ = SqliteConnectOptions::from_str(&db_path)?
+pub async fn get_db(filepath: &str, password: &str) -> Pool<Sqlite> {
+    let db_path = get_data_path() + filepath + ".db";
+    let cfg = SqliteConnectOptions::from_str(&db_path)
+        .expect("file err")
         .pragma("key", password.to_owned())
-        .create_if_missing(true)
-        .connect();
+        .create_if_missing(true);
 
-    Ok(())
+    let pool = SqlitePool::connect_with(cfg).await.expect("err");
+    let migrator = sqlx::migrate::Migrator::new(Path::new("./src/migrations")).await.expect("error");
+    migrator.run(&pool).await.expect("migrator run err");
+    return pool
 }
-
-
 
 

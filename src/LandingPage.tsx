@@ -6,13 +6,13 @@ import { invoke } from "@tauri-apps/api/core";
 import { Description, Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
 
 
-function DatabaseOption({ name, mtime }: any) {
+function DatabaseOption({ filename, mtime }: any) {
   const [password, setPassword] = useState<string>("");
   const [hidePassword, setHidePassword] = useState<"text" | "password">("password")
 
   return (
     <li className="text-slate-400 px-4 h-15  relative border-slate-900 bg-mirage-300/20 hover:bg-mirage-300/30 transition-colors duration-150 ease-in-out hover:bg-mirage-4000/25 border-y py-1.5 flex items-center justify-between">
-      <h3 class="text-slate-400 w-52 text-lg relative top-2"><span class="text-sm text-slate-600 absolute -top-4 -left-0.5">Filename</span>{name}
+      <h3 class="text-slate-400 w-52 text-lg relative top-2"><span class="text-sm text-slate-600 absolute -top-4 -left-0.5">Filename</span>{filename}
       </h3>
       <h3 class="text-slate-400 w-64 text-lg relative top-2"><span class="text-sm text-slate-600 absolute -top-4 -left-0.5">Modified</span>{mtime}
       </h3>
@@ -22,7 +22,9 @@ function DatabaseOption({ name, mtime }: any) {
           {hidePassword === "password" ? <EyeIcon className="h-5 text-slate-600 right-6 absolute top-1.5" /> : <EyeSlashIcon className="h-5 text-slate-600 right-6 absolute top-1.5" />}
         </button>
       </div>
-      <button className="btn-primary mb-0.5">
+      <button onClick={async () => {
+        await invoke("unlock_db", { filename, password})
+      }} className="btn-primary mb-0.5">
         Unlock
         <KeyIcon />
       </button>
@@ -46,26 +48,36 @@ export default function LandingPage() {
       let pluginsPath: string | undefined = await store.get("plugins_path")
       if (pluginsPath) setPluginsValue(pluginsPath)
       let dbs: any[] | undefined = await invoke("ls_dbs")
+      console.log(dbs)
       if (dbs) setDatabases(dbs)
     }
     doOnce()
 
   }, [])
 
-  const [createPassword, setCreatePassword] = useState<string>("");
+  const [createPassword, setCreatePassword] = useState<string>("")
+  const [createFilename, setCreateFilename] = useState<string>("")
   return (
     <>
 
       <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
-        <div className="fixed inset-0 flex w-screen items-center bg-gray-900/80 backdrop-blur-lg justify-center p-4">
-          <DialogPanel className="flex flex-col bg-gray-600/95   rounded-lg shadow-sm shadow-gray-600/60 py-10 px-15">
-            <DialogTitle className="text-slate-300 font-bold text-lg my-1">Create database</DialogTitle>
-            <Description className="text-slate-300 mb-14">This will create an encrypted database, set a <br />password to keep your data safe</Description>
-            <h3 class="text-slate-400 text-lg relative w-full mb-6"><span class="text-sm text-slate-600 absolute -top-6 -left-0.5">Password</span>
-              <input value={createPassword} onInput={(e) => setCreatePassword(e.currentTarget.value)} type="password" class="hover:border-primary border border-slate-900 focus:bg-mirage-900/60 bg-mirage-300/20 w-full transition-colors duration-150 px-2 rounded outline-1 outline-slate-900 text-slate-300/80 focus:outline-2 focus:stroke-primary focus:outline-primary py-1" placeholder="Your password" />
-            </h3><div className="flex gap-4 self-end">
+        <div className="fixed inset-0 flex w-screen items-center bg-gray-900/80 justify-center p-4">
+          <DialogPanel className="flex flex-col bg-gray-700/80 rounded-lg shadow-sm shadow-gray-600/60 py-10 px-15">
+            <DialogTitle className="text-slate-300 font-bold text-lg flex mb-3 "><h3 class="border-b-2 border-b-primary">
+            Create database</h3></DialogTitle>
+            <Description className="text-slate-300 mb-4 relative">Create an encrypted database and set <br />a password to keep your data safe</Description>
+            <h3 class="text-slate-400 text-lg relative w-full mb-6"><span class="text-sm text-slate-600 absolute -left-0.5">Name</span></h3>
+            <input value={createFilename} onInput={(e) => setCreateFilename(e.currentTarget.value)} type="text" class="hover:border-primary border border-slate-900 focus:bg-mirage-900/60 bg-mirage-300/20 w-full transition-colors duration-150 px-2 rounded outline-1 outline-slate-900 text-slate-300/80 focus:outline-2 focus:stroke-primary focus:outline-primary py-1" placeholder="Your database name" />
+            
+            <h3 class="text-slate-400 text-lg relative w-full mb-6 mt-10"><span class="text-sm text-slate-600 absolute -top-6 -left-0.5">Password</span>
+            <input value={createPassword} onInput={(e) => setCreatePassword(e.currentTarget.value)} type="password" class="hover:border-primary border border-slate-900 focus:bg-mirage-900/60 bg-mirage-300/20 w-full transition-colors duration-150 px-2 rounded outline-1 outline-slate-900 text-slate-300/80 focus:outline-2 focus:stroke-primary focus:outline-primary py-1 mb-3" placeholder="Your password" />
+            
+            </h3><div className="flex gap-4 ">
               <button className="btn-danger" onClick={() => setIsOpen(false)}>Cancel</button>
-              <button className="btn-primary-solid mb-0.5" onClick={() => setIsOpen(false)}>Create</button>
+              <button className="btn-primary-solid mb-0.5" onClick={async () => { 
+                await invoke("create_db", { filename: createFilename, password: createPassword})
+                setIsOpen(false)
+              }}>Create</button>
             </div>
           </DialogPanel>
         </div>
@@ -92,12 +104,11 @@ export default function LandingPage() {
                   <ExclamationTriangleIcon className="h-6 bottom-4 mr-3 right-0 absolute text-slate-600/70" />
                 </h3>
               </li>
-            ) : databases.map((db) => 
-              <DatabaseOption
-                name={db.name.split('/').slice(-1)}
-                // mtime unix seconds to js date milliseconds
-                mtime={new Date(db.mtime * 1000).toLocaleString()} />
-            )}
+            ) : databases.map((db) => {
+              return  <DatabaseOption
+                filename={db.name.split("/").pop()}
+                mtime={new Date(db.mtime).toLocaleString()} />
+            })}
           </ul>
           <hr className="pt-6 text-mirage-400/60" />
           <div className="flex justify-between">

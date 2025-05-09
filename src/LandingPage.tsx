@@ -23,7 +23,7 @@ function DatabaseOption({ filename, mtime }: any) {
         </button>
       </div>
       <button onClick={async () => {
-        await invoke("unlock_db", { filename, password})
+        await invoke("unlock_db", { filename, password })
       }} className="btn-primary mb-0.5">
         Unlock
         <KeyIcon />
@@ -41,15 +41,18 @@ export default function LandingPage() {
 
   const [databases, setDatabases] = useState<any[]>([]);
 
+  const refreshDbLs = async () => {
+    let dbs: any[] | undefined = await invoke("ls_dbs")
+    if (dbs) setDatabases(dbs)
+  }
+
   useEffect(() => {
     async function doOnce() {
       let venvPath: string | undefined = await store.get("venv_path")
       if (venvPath) setVenvValue(venvPath)
       let pluginsPath: string | undefined = await store.get("plugins_path")
       if (pluginsPath) setPluginsValue(pluginsPath)
-      let dbs: any[] | undefined = await invoke("ls_dbs")
-      console.log(dbs)
-      if (dbs) setDatabases(dbs)
+      refreshDbLs()
     }
     doOnce()
 
@@ -61,23 +64,34 @@ export default function LandingPage() {
     <>
 
       <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
-        <div className="fixed inset-0 flex w-screen items-center bg-gray-900/80 justify-center p-4">
-          <DialogPanel className="flex flex-col bg-gray-700/80 rounded-lg shadow-sm shadow-gray-600/60 py-10 px-15">
-            <DialogTitle className="text-slate-300 font-bold text-lg flex mb-3 "><h3 class="border-b-2 border-b-primary">
-            Create database</h3></DialogTitle>
-            <Description className="text-slate-300 mb-4 relative">Create an encrypted database and set <br />a password to keep your data safe</Description>
-            <h3 class="text-slate-400 text-lg relative w-full mb-6"><span class="text-sm text-slate-600 absolute -left-0.5">Name</span></h3>
-            <input value={createFilename} onInput={(e) => setCreateFilename(e.currentTarget.value)} type="text" class="hover:border-primary border border-slate-900 focus:bg-mirage-900/60 bg-mirage-300/20 w-full transition-colors duration-150 px-2 rounded outline-1 outline-slate-900 text-slate-300/80 focus:outline-2 focus:stroke-primary focus:outline-primary py-1" placeholder="Your database name" />
-            
-            <h3 class="text-slate-400 text-lg relative w-full mb-6 mt-10"><span class="text-sm text-slate-600 absolute -top-6 -left-0.5">Password</span>
-            <input value={createPassword} onInput={(e) => setCreatePassword(e.currentTarget.value)} type="password" class="hover:border-primary border border-slate-900 focus:bg-mirage-900/60 bg-mirage-300/20 w-full transition-colors duration-150 px-2 rounded outline-1 outline-slate-900 text-slate-300/80 focus:outline-2 focus:stroke-primary focus:outline-primary py-1 mb-3" placeholder="Your password" />
-            
-            </h3><div className="flex gap-4 ">
-              <button className="btn-danger" onClick={() => setIsOpen(false)}>Cancel</button>
-              <button className="btn-primary-solid mb-0.5" onClick={async () => { 
-                await invoke("create_db", { filename: createFilename, password: createPassword})
-                setIsOpen(false)
-              }}>Create</button>
+        <div className="fixed inset-0 flex w-screen items-center bg-gray-900/95 backdrop-blur-2xl  justify-center px-4">
+          <DialogPanel className="relative flex flex-col from-gray-700/90 to-gray-800/80 bg-gradient-to-br rounded-lg shadow-sm shadow-gray-600/60 pt-6">
+            <DialogTitle className="text-slate-300 font-bold text-lg flex mb-3 px-6"><h3 class="border-b-2 border-b-primary">
+              Create database</h3></DialogTitle>
+            <Description className="text-slate-300 mb-4 relative px-6">Create an encrypted database and set <br />a password to keep your data safe</Description>
+            <section class="px-6">
+              <h3 class="text-slate-400 text-lg relative w-full mb-6 px-6 "><span class="text-sm text-slate-600 absolute -left-0.5">Name</span></h3>
+              <input value={createFilename} onInput={(e) => setCreateFilename(e.currentTarget.value)} type="text" class="hover:border-primary border  border-slate-900 focus:bg-mirage-900/60 bg-mirage-300/20 w-full transition-colors duration-150 px-2 rounded outline-1 outline-slate-900 text-slate-300/80 focus:outline-2 focus:stroke-primary focus:outline-primary py-1" placeholder="Your database name" />
+
+              <h3 class="text-slate-400 text-lg relative w-full mb-6 mt-10"><span class="text-sm text-slate-600 absolute -top-6 -left-0.5">Password</span>
+                <input value={createPassword} onInput={(e) => setCreatePassword(e.currentTarget.value)} type="password" class="hover:border-primary border border-slate-900 focus:bg-mirage-900/60 bg-mirage-300/20 w-full transition-colors duration-150 px-2 rounded outline-1 outline-slate-900 text-slate-300/80 focus:outline-2 focus:stroke-primary focus:outline-primary py-1 mb-3" placeholder="Your password" />
+              </h3>
+            </section>
+            <div className="flex  bottom-4 right-15">
+              <button 
+                className="w-full flex items-centers justify-center py-2  border-danger-600 rounded-bl-lg border-2 text-slate-300"
+                onClick={() => setIsOpen(false)}>
+                Cancel
+              </button>
+              <button 
+                className="w-full flex  items-centers justify-center py-2  border-primary bg-primary hover:bg-primary-500 transition-colors ease-in-out rounded-br-lg border-2 text-slate-300 mb-0.5"
+                onClick={async () => {
+                  await invoke("create_db", { filename: createFilename, password: createPassword })
+                  setIsOpen(false)
+                  refreshDbLs()
+              }}>
+                Create
+              </button>
             </div>
           </DialogPanel>
         </div>
@@ -105,7 +119,7 @@ export default function LandingPage() {
                 </h3>
               </li>
             ) : databases.map((db) => {
-              return  <DatabaseOption
+              return <DatabaseOption
                 filename={db.name.split("/").pop()}
                 mtime={new Date(db.mtime).toLocaleString()} />
             })}

@@ -11,7 +11,7 @@ function DatabaseOption({ filename, mtime }: any) {
   const [hidePassword, setHidePassword] = useState<"text" | "password">("password")
 
   return (
-    <li className="text-slate-400 px-4 h-15  relative border-slate-900 bg-mirage-300/20 hover:bg-mirage-300/30 transition-colors duration-150 ease-in-out hover:bg-mirage-4000/25 border-y py-1.5 flex items-center justify-between">
+    <li className="text-slate-400 px-4 h-15  relative border-slate-900 bg-mirage-300/20 hover:bg-mirage-300/10 transition-colors duration-150 ease-in-out hover:bg-mirage-4000/25 border-y py-1.5 flex items-center justify-between">
       <h3 class="text-slate-400 w-52 text-lg relative top-2"><span class="text-sm text-slate-600 absolute -top-4 -left-0.5">Filename</span>{filename}
       </h3>
       <h3 class="text-slate-400 w-64 text-lg relative top-2"><span class="text-sm text-slate-600 absolute -top-4 -left-0.5">Modified</span>{mtime}
@@ -41,7 +41,7 @@ export default function LandingPage() {
 
   const [databases, setDatabases] = useState<any[]>([]);
 
-  const refreshDbLs = async () => {
+  const refreshDbList = async () => {
     let dbs: any[] | undefined = await invoke("ls_dbs")
     if (dbs) setDatabases(dbs)
   }
@@ -52,7 +52,7 @@ export default function LandingPage() {
       if (venvPath) setVenvValue(venvPath)
       let pluginsPath: string | undefined = await store.get("plugins_path")
       if (pluginsPath) setPluginsValue(pluginsPath)
-      refreshDbLs()
+      await refreshDbList()
     }
     doOnce()
 
@@ -60,6 +60,9 @@ export default function LandingPage() {
 
   const [createPassword, setCreatePassword] = useState<string>("")
   const [createFilename, setCreateFilename] = useState<string>("")
+
+  const [transformResult, setTransformResult] = useState<any>("")
+
   return (
     <>
 
@@ -88,7 +91,7 @@ export default function LandingPage() {
                 onClick={async () => {
                   await invoke("create_db", { filename: createFilename, password: createPassword })
                   setIsOpen(false)
-                  refreshDbLs()
+                  refreshDbList()
               }}>
                 Create
               </button>
@@ -176,7 +179,15 @@ export default function LandingPage() {
             </li>
           </ul>
         </section>
-
+        <button className="bg-success" onClick={async () => {
+              const data = await invoke("run_transform", { source: JSON.stringify(
+                {"id":"1125899906842654","data":{"label":"Website","color":"#1D1DB8","icon":"world-www","elements":[{"value":"github.com","icon":"world-www","label":"Domain","type":"text"}]},"position":{"x":5275.072364647034,"y":3488.8488109543805},"transform":"To IP"}
+              )})
+              setTransformResult(data)
+              console.log('transformResult', transformResult)
+        }}>
+          Test
+        </button>
       </main>
     </>
   )

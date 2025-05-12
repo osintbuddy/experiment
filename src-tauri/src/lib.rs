@@ -6,8 +6,16 @@ use tauri_plugin_store::StoreExt;
 use serde::{Deserialize, Serialize};
 use sqlx;
 
-mod client;
+mod venv;
 mod db;
+
+
+#[derive(Default)]
+struct AppState {
+  filepath: String,
+  password: String,
+  pyvenv: String,
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -23,7 +31,7 @@ pub fn run() {
         })
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_fs_pro::init())
-        .invoke_handler(tauri::generate_handler![client::run_transform, ls_dbs, unlock_db, create_db])
+        .invoke_handler(tauri::generate_handler![venv::run_transform, ls_dbs, unlock_db, create_db])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

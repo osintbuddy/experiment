@@ -4,7 +4,8 @@ import PublicLayout from "./components/PublicLayout";
 import AppLayout from "./components/AppLayout";
 // import { TourProvider } from "@reactour/tour";
 // import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
-import LandingPage from "./LandingPage"
+import LandingPage from "./routes/LandingPage"
+import DashboardPage from "./routes/DashboardPage";
 
 
 const router = createBrowserRouter([
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
     path: "/",
     element: <AppLayout />,
     children: [
+      {
+        path: "dashboard",
+        element: <DashboardPage />
+      }
     ]
   }
 ]);
@@ -30,7 +35,6 @@ const router = createBrowserRouter([
 
 export default function AppRoutes(): JSX.Element {
   return (
-   
       <RouterProvider router={router} />
   );
 }

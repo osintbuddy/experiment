@@ -184,7 +184,7 @@ export default function LandingPage() {
                 {"id":"1125899906842654","data":{"label":"Website","color":"#1D1DB8","icon":"world-www","elements":[{"value":"github.com","icon":"world-www","label":"Domain","type":"text"}]},"position":{"x":5275.072364647034,"y":3488.8488109543805},"transform":"To IP"}
               )})
               setTransformResult(data)
-              console.log('transformResult', transformResult)
+              console.log('transformResult', data)
         }}>
           Test
         </button>

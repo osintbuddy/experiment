@@ -80,14 +80,14 @@ export default function LandingPage() {
                 <input value={createPassword} onInput={(e) => setCreatePassword(e.currentTarget.value)} type="password" class="hover:border-primary border border-slate-900 focus:bg-mirage-900/60 bg-mirage-300/20 w-full transition-colors duration-150 px-2 rounded outline-1 outline-slate-900 text-slate-300/80 focus:outline-2 focus:stroke-primary focus:outline-primary py-1 mb-3" placeholder="Your password" />
               </h3>
             </section>
-            <div className="flex  bottom-4 right-15">
+            <div className="flex bottom-4 right-15">
               <button 
                 className="w-full flex items-centers justify-center py-2  border-danger-600 rounded-bl-lg border-2 text-slate-300"
                 onClick={() => setIsOpen(false)}>
                 Cancel
               </button>
               <button 
-                className="w-full flex  items-centers justify-center py-2  border-primary bg-primary hover:bg-primary-500 transition-colors ease-in-out rounded-br-lg border-2 text-slate-300 mb-0.5"
+                className="w-full flex items-centers justify-center py-2  border-primary bg-primary hover:bg-primary-500 transition-colors ease-in-out rounded-br-lg border-2 text-slate-300 mb-0.5"
                 onClick={async () => {
                   await invoke("create_db", { filename: createFilename, password: createPassword })
                   setIsOpen(false)
@@ -100,7 +100,6 @@ export default function LandingPage() {
         </div>
       </Dialog>
       <main className="mt-40 flex items-center w-full flex-col h-full relative ">
-
         <section className="flex flex-col bg-gray-700/55 backdrop-blur-sm rounded-lg shadow-sm shadow-gray-600/60 py-6 p-10 min-w-[60rem]">
           <div className="flex justify-between mb-6">
             <h2 className="text-slate-300/90 text-2xl mr-64 font-display border-b-4 border-b-primary pr-2 relative">

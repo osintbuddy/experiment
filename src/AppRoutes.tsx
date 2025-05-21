@@ -1,10 +1,10 @@
 import { JSX } from "preact/jsx-runtime";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+
 import PublicLayout from "./components/PublicLayout";
+import DatabasesPage from "./routes/DatabasesPage"
+
 import AppLayout from "./components/AppLayout";
-// import { TourProvider } from "@reactour/tour";
-// import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
-import DatabasesPage from "./routes/LandingPage"
 import DashboardPage from "./routes/DashboardPage";
 
 

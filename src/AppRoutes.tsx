@@ -4,7 +4,7 @@ import PublicLayout from "./components/PublicLayout";
 import AppLayout from "./components/AppLayout";
 // import { TourProvider } from "@reactour/tour";
 // import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
-import LandingPage from "./routes/LandingPage"
+import DatabasesPage from "./routes/LandingPage"
 import DashboardPage from "./routes/DashboardPage";
 
 
@@ -16,7 +16,7 @@ const router = createBrowserRouter([
       {
 
         path: "",
-        element: <LandingPage />,
+        element: <DatabasesPage />,
       },
     ],
   },

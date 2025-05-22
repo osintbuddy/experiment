@@ -9,6 +9,8 @@ import DirectoryInput from "../components/inputs/DirectoryInput";
 import Button from "../components/buttons/Button";
 import GhostButton from "../components/buttons/GhostButton";
 import { useMountEffect } from "../app/hooks";
+import { useAtom } from "jotai";
+import { graphsAtom } from "../app/atoms";
 
 
 interface DatabaseOptionProps {
@@ -22,8 +24,10 @@ function DatabaseOption({ filename, mtime, setShowDeleteDialog, setActiveFilenam
   const [password, setPassword] = useState("");
   const [hidePassword, setHidePassword] = useState<"text" | "password">("password")
 
+  const [graphs, setGraphs] = useAtom(graphsAtom)
+
   return (
-    <li className="text-slate-400 px-4 h-15  relative border-slate-900 bg-mirage-300/20 hover:bg-mirage-300/15 transition-colors duration-150 ease-in-out hover:bg-mirage-4000/25 border-y py-1.5 flex items-center justify-between">
+    <li className="text-slate-400 px-4 h-15 relative border-mirage-600 bg-mirage-400/20 hover:bg-mirage-300/15 transition-colors duration-150 ease-in-out hover:bg-mirage-4000/25 border-y py-1.5 flex items-center justify-between">
       <button
         onClick={() => {
           setShowDeleteDialog(true)
@@ -49,7 +53,11 @@ function DatabaseOption({ filename, mtime, setShowDeleteDialog, setActiveFilenam
           {hidePassword === "password" ? <EyeIcon className="h-5 text-slate-600 right-6 absolute top-1.5" /> : <EyeSlashIcon className="h-5 text-slate-600 right-6 absolute top-1.5" />}
         </button>
       </div>
-      <GhostButton btnStyle="primary" onClick={() => invoke("unlock_db", { filename, password })}>
+      <GhostButton btnStyle="primary" onClick={() => {
+        invoke("unlock_db", { filename, password }).then((result) => {
+          console.log(result)
+        })
+      }}>
         Unlock
         <KeyIcon className="btn-icon" />
       </GhostButton>
@@ -77,7 +85,7 @@ export default function DatabasesPage() {
     store.get("plugins_path").then((pluginsPath: string) => setPluginsValue(pluginsPath))
     refreshDbList()
   })
-  
+
   const [createPassword, setCreatePassword] = useState("")
   const [createFilename, setCreateFilename] = useState("")
   const [activeFilename, setActiveFilename] = useState("");
@@ -203,10 +211,22 @@ export default function DatabasesPage() {
               <h3 class=" text-lg relative w-full mb-6 px-6 ">
                 <span class="text-sm text-slate-600 absolute -left-0.5">Name</span>
               </h3>
-              <input value={createFilename} onInput={(e) => setCreateFilename(e.currentTarget.value)} type="text" class="hover:border-primary border  border-slate-900 focus:bg-mirage-900/60 bg-mirage-300/20 w-full transition-colors duration-150 px-2 rounded outline-1 outline-slate-900 text-slate-300/80 focus:outline-2 focus:stroke-primary focus:outline-primary py-1" placeholder="Your database name" />
+              <input
+                value={createFilename}
+                onInput={(e) => setCreateFilename(e.currentTarget.value)}
+                type="text"
+                placeholder="Your database name"
+                class="hover:border-primary border  border-slate-900 focus:bg-mirage-900/60 bg-mirage-300/20 w-full transition-colors duration-150 px-2 rounded outline-1 outline-slate-900 text-slate-300/80 focus:outline-2 focus:stroke-primary focus:outline-primary py-1"
+              />
               <h3 class="text-slate-400 text-lg relative w-full mb-6 mt-10">
                 <span class="text-sm text-slate-600 absolute -top-6 -left-0.5">Password</span>
-                <input value={createPassword} onInput={(e) => setCreatePassword(e.currentTarget.value)} type="password" class="hover:border-primary border border-slate-900 focus:bg-mirage-900/60 bg-mirage-300/20 w-full transition-colors duration-150 px-2 rounded outline-1 outline-slate-900 text-slate-300/80 focus:outline-2 focus:stroke-primary focus:outline-primary py-1 mb-3" placeholder="Your password" />
+                <input
+                  value={createPassword}
+                  onInput={(e) => setCreatePassword(e.currentTarget.value)}
+                  type="password"
+                  placeholder="Your password"
+                  class="hover:border-primary border border-slate-900 focus:bg-mirage-900/60 bg-mirage-300/20 w-full transition-colors duration-150 px-2 rounded outline-1 outline-slate-900 text-slate-300/80 focus:outline-2 focus:stroke-primary focus:outline-primary py-1 mb-3"
+                />
               </h3>
             </section>
             <section className="flex bottom-4 right-15">
@@ -216,17 +236,18 @@ export default function DatabasesPage() {
                   setShowCreateDialog(false)
                   setCreateFilename("")
                   setCreatePassword("")
-              }}>
+                }}>
                 Cancel
               </button>
               <button
                 className="w-full flex items-centers justify-center py-2  border-primary bg-primary hover:bg-primary-500 transition-colors ease-in-out rounded-br-lg border-2 text-slate-300 mb-0.5"
                 onClick={() => {
-                  invoke("create_db", { filename: createFilename, password: createPassword })
-                  setShowCreateDialog(false)
-                  refreshDbList()
-                  setCreateFilename("")
-                  setCreatePassword("")
+                  invoke("create_db", { filename: createFilename, password: createPassword }).then(() => {
+                    setCreateFilename("")
+                    setCreatePassword("")
+                    refreshDbList()
+                    setShowCreateDialog(false)
+                  })
                 }}>
                 Create
               </button>

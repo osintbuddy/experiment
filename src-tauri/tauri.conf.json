@@ -12,6 +12,8 @@
   "app": {
     "windows": [
       {
+        "width": 1200,
+        "height": 800,
         "title": "OSINTBuddy",
         "maximizable": true,
         "transparent": false,

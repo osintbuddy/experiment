@@ -1,20 +1,6 @@
-use futures::lock::Mutex;
-use serde_json::json;
-use tauri::{AppHandle, State, Wry};
-use tauri_plugin_store::{Store, StoreBuilder, StoreExt};
-use std::{path::PathBuf, process::Command};
-
-use crate::AppState;
-
-fn get_executable_file_path() -> String {
-    // FIXME: allow user to set their paths (venv & plugins paths)
-    let cwd = std::env::current_exe();
-    return cwd
-        .expect("not str")
-        .into_os_string()
-        .into_string()
-        .unwrap();
-}
+use tauri::{AppHandle};
+use tauri_plugin_store::{ StoreExt};
+use std::{ process::Command};
 
 #[tauri::command]
 pub fn run_transform(app: AppHandle, source: String) -> serde_json::Value {

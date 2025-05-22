@@ -109,6 +109,17 @@
   @apply box-border;
 }
 
+button {
+  cursor: pointer;
+}
+.btn-icon {
+  @apply ml-3 w-5 h-5 transition-transform duration-150 ease-out stroke-none
+}
+:disabled {
+  cursor: default;
+}
+
+/* background gradient grid */
 html {
   z-index: 0;
   --grid-space: 1px;
@@ -138,7 +149,6 @@ html {
         var(--grid-large-size) var(--grid-large-size),
         var(--grid-large-size) var(--grid-large-size);
 }
-
 html::after {
   content: "";
   position: absolute;
@@ -154,26 +164,25 @@ html::after {
     radial-gradient(142% 91% at 111% 84%, #1144ed0f 25%, rgba(69, 34, 150, 0.045) 95%);
     z-index: -1;
 }
+/* end background gradient grid */
 
 
-button {
-  cursor: pointer;
+/* custom scrollbar Style */
+*::-webkit-scrollbar {
+  width: 10px;
+  border-radius: none;
+
 }
-:disabled {
-  cursor: default;
-}
+*::-webkit-scrollbar-track {
+  background: #19233433;
+  width: 10px;
+  border-radius: none;
 
-
-.btn-icon {
-  @apply ml-3 w-5 h-5 transition-transform duration-150 ease-out stroke-none
 }
-
-.btn-primary-solid:hover svg,
-.btn-primary:hover svg,
-.btn-danger:hover svg {
-  @apply ml-4 w-5 h-5 scale-[106%] ease-linear
+*::-webkit-scrollbar-thumb {
+  background-color: #1a1f2793;
+  border-radius: none;
+  border-right: 8px solid #1b243a84;
 }
+/* end custom scrollbar Style */
 
-.btn-danger {
-  @apply ring-1 hover:shadow ring-danger-500/70 hover:ring-danger-500 text-left text-sm font-semibold text-danger-500/70 hover:text-danger-500 scale-100 hover:scale-[99%] flex items-center border hover:ring-inset border-danger-500/70 hover:border-danger-500 py-2 px-3 rounded-md  font-display justify-center transition-all duration-75 ease-linear
-}

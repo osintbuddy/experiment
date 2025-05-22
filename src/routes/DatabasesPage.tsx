@@ -22,7 +22,7 @@ function DatabaseOption({ filename, mtime, setShowDeleteDialog, setActiveFilenam
   const [hidePassword, setHidePassword] = useState<"text" | "password">("password")
 
   return (
-    <li className="text-slate-400 px-4 h-15  relative border-slate-900 bg-mirage-300/20 hover:bg-mirage-300/10 transition-colors duration-150 ease-in-out hover:bg-mirage-4000/25 border-y py-1.5 flex items-center justify-between">
+    <li className="text-slate-400 px-4 h-15  relative border-slate-900 bg-mirage-300/20 hover:bg-mirage-300/15 transition-colors duration-150 ease-in-out hover:bg-mirage-4000/25 border-y py-1.5 flex items-center justify-between">
       <button
         onClick={() => {
           setShowDeleteDialog(true)
@@ -125,7 +125,7 @@ export default function DatabasesPage() {
             <h2 className="text-slate-300/90 text-2xl relative font-display border-b-4 border-b-primary pr-2 ">
               Local Plugins
               <QuestionMarkCircleIcon
-                title="Select a plugins folder to gain access to OSINTBuddy entities."
+                title="Learn how to setup your local plugins by reading the OSINTBuddy manual."
                 className="h-5 absolute -top-2 -right-3 text-slate-600"
               />
             </h2>
@@ -135,9 +135,6 @@ export default function DatabasesPage() {
               <h3 class="font-display mb-2">Python Virtual Environment Path</h3>
               <div className="flex relative">
                 <DirectoryInput
-                  onBlur={async (e) => {
-                    await store.set("venv_path", e.currentTarget.value)
-                  }}
                   value={venvValue}
                   onChange={(e) => setVenvValue(e.currentTarget.value)}
                   onBtnClick={() => open({
@@ -158,9 +155,6 @@ export default function DatabasesPage() {
               <h3 class="font-display mb-2">Entity Plugins Path</h3>
               <div className="flex relative">
                 <DirectoryInput
-                  onBlur={async (e) => {
-                    await store.set("venv_path", e.currentTarget.value)
-                  }}
                   onChange={(e) => setPluginsValue(e.currentTarget.value)}
                   value={pluginsValue}
                   onBtnClick={() => open({

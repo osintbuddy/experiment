@@ -4,7 +4,7 @@ import { ButtonProps } from "./Button";
 
 
 const styles = {
-  primary: "ring-primary-400/95 focus:ring-primary-300/90 hover:ring-primary-300/80 focus:border-primary-300/90 border-primary-400/95 hover:border-primary-300/80 hover:stroke-primary-300/80 stroke-primary-400/95",
+  primary: "ring-primary-400/95 focus:ring-primary-300/90 hover:ring-primary-400 focus:border-primary-300/90 border-primary-400/95 hover:border-primary-400 hover:stroke-primary-400 stroke-primary-400/95",
   danger: "ring-danger-500/95 focus:ring-danger-400/90 hover:ring-danger-400/80 border-danger-500/95 focus:border-danger-400/90 hover:border-danger-400/80 stroke-danger-500/95 hover:stroke-danger-400/80"
 }
 

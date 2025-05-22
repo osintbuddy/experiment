@@ -4,9 +4,10 @@ import { useEffect, useState } from "preact/hooks";
 import { LazyStore } from '@tauri-apps/plugin-store';
 import { invoke } from "@tauri-apps/api/core";
 import { Description, Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
+
 import DirectoryInput from "../components/inputs/DirectoryInput";
-import PrimaryBtn from "../components/buttons/PrimaryBtn";
-import PrimaryGhostBtn from "../components/buttons/PrimaryGhostBtn";
+import Button from "../components/buttons/Button";
+import GhostButton from "../components/buttons/GhostButton";
 
 
 interface DatabaseOptionProps {
@@ -22,10 +23,13 @@ function DatabaseOption({ filename, mtime, setShowDeleteDialog, setActiveFilenam
 
   return (
     <li className="text-slate-400 px-4 h-15  relative border-slate-900 bg-mirage-300/20 hover:bg-mirage-300/10 transition-colors duration-150 ease-in-out hover:bg-mirage-4000/25 border-y py-1.5 flex items-center justify-between">
-      <button onClick={() => {
-        setShowDeleteDialog(true)
-        setActiveFilename(filename)
-      }} className="hover:rotate-5 rotate-0 self-end mb-2">
+      <button
+        onClick={() => {
+          setShowDeleteDialog(true)
+          setActiveFilename(filename)
+        }}
+        className="hover:rotate-5 rotate-0 self-end mb-2"
+      >
         <TrashIcon className="btn-icon !mx-0 !mr-3 text-danger-500/60 scale-100 hover:scale-105 hover:text-danger-500" />
       </button>
       <h3 class="text-slate-400 w-52 text-lg relative top-2"><span class="text-sm text-slate-600 absolute -top-4 -left-0.5">Filename</span>{filename.split("/").pop()}
@@ -44,10 +48,10 @@ function DatabaseOption({ filename, mtime, setShowDeleteDialog, setActiveFilenam
           {hidePassword === "password" ? <EyeIcon className="h-5 text-slate-600 right-6 absolute top-1.5" /> : <EyeSlashIcon className="h-5 text-slate-600 right-6 absolute top-1.5" />}
         </button>
       </div>
-      <PrimaryGhostBtn onClick={async () => await invoke("unlock_db", { filename, password })} >
+      <GhostButton btnStyle="primary" onClick={() => invoke("unlock_db", { filename, password })}>
         Unlock
         <KeyIcon className="btn-icon" />
-      </PrimaryGhostBtn>
+      </GhostButton>
     </li>
   )
 }
@@ -90,10 +94,10 @@ export default function DatabasesPage() {
               />
             </h2>
             <div className="flex">
-              <PrimaryBtn onClick={() => setShowCreateDialog(true)}>
+              <Button btnStyle="primary" onClick={() => setShowCreateDialog(true)}>
                 Create Database
                 <LockClosedIcon className="btn-icon" />
-              </PrimaryBtn>
+              </Button>
             </div>
           </div>
           <ul className="pb-6 h-72 flex flex-col  justify-start ">
@@ -177,7 +181,15 @@ export default function DatabasesPage() {
         </section>
       </main>
 
-      <Dialog open={showCreateDialog} onClose={() => setShowCreateDialog(false)} className="relative z-50">
+      <Dialog
+        open={showCreateDialog}
+        onClose={() => {
+          setShowCreateDialog(false)
+          setCreateFilename("")
+          setCreatePassword("")
+        }}
+        className="relative z-50"
+      >
         <div className="fixed inset-0 flex w-screen items-center bg-gray-900/95 backdrop-blur-2xl  justify-center px-4">
           <DialogPanel className="relative flex flex-col from-gray-700/90 to-gray-800/80 bg-gradient-to-br rounded-lg shadow-sm shadow-gray-600/60 pt-6">
             <DialogTitle className="text-slate-300 font-bold text-lg flex mb-3 px-6">
@@ -201,7 +213,11 @@ export default function DatabasesPage() {
             <section className="flex bottom-4 right-15">
               <button
                 className="w-full flex items-centers justify-center py-2  border-danger-600 rounded-bl-lg border-2 text-slate-300"
-                onClick={() => setShowCreateDialog(false)}>
+                onClick={() => {
+                  setShowCreateDialog(false)
+                  setCreateFilename("")
+                  setCreatePassword("")
+              }}>
                 Cancel
               </button>
               <button
@@ -210,6 +226,8 @@ export default function DatabasesPage() {
                   invoke("create_db", { filename: createFilename, password: createPassword })
                   setShowCreateDialog(false)
                   refreshDbList()
+                  setCreateFilename("")
+                  setCreatePassword("")
                 }}>
                 Create
               </button>
@@ -217,7 +235,15 @@ export default function DatabasesPage() {
           </DialogPanel>
         </div>
       </Dialog>
-      <Dialog open={showDeleteDialog} onClose={() => setShowDeleteDialog(false)} className="relative z-50">
+
+      <Dialog
+        open={showDeleteDialog}
+        onClose={() => {
+          setShowDeleteDialog(false)
+          setActiveFilename("")
+        }}
+        className="relative z-50"
+      >
         <div className="fixed inset-0 flex w-screen items-center bg-gray-900/95 backdrop-blur-2xl  justify-center px-4">
           <DialogPanel className="relative flex flex-col from-gray-700/90 to-gray-800/80 bg-gradient-to-br rounded-lg shadow-sm shadow-gray-600/60 pt-6">
             <DialogTitle className="text-slate-300 font-bold text-lg flex mb-3 px-6">
@@ -248,17 +274,6 @@ export default function DatabasesPage() {
           </DialogPanel>
         </div>
       </Dialog>
-      {/* <button className="bg-success opacity-60" onClick={async () => {
-          const data = await invoke("run_transform", {
-            source: JSON.stringify(
-              { "id": "1125899906842654", "data": { "label": "Website", "color": "#1D1DB8", "icon": "world-www", "elements": [{ "value": "github.com", "icon": "world-www", "label": "Domain", "type": "text" }] }, "position": { "x": 5275.072364647034, "y": 3488.8488109543805 }, "transform": "To IP" }
-            )
-          })
-          setTransformResult(data)
-          console.log('transformResult', data)
-        }}>
-          Test {transformResult && JSON.stringify(transformResult)}
-        </button> */}
     </>
   )
 }

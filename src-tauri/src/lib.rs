@@ -21,7 +21,13 @@ pub fn run() {
         })
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_fs_pro::init())
-        .invoke_handler(tauri::generate_handler![venv::run_transform, db::ls_dbs, db::unlock_db, db::create_db, show_main_window])
+        .invoke_handler(tauri::generate_handler![
+            venv::run_transform,
+            db::ls_dbs,
+            db::unlock_db,
+            db::delete_file,
+            db::create_db,
+            show_main_window])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

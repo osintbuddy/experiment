@@ -71,3 +71,11 @@ pub async fn unlock_db(filename: String, password: String) {
 pub async fn create_db(filename: String, password: String) {
     db::get_db(&filename, &password).await;
 }
+
+#[tauri::command]
+pub fn delete_file(filename: String) {
+    match fs::remove_file(&filename) {
+        Ok(()) => (),
+        Err(error) => println!("File deletion error: {}", error)
+    };
+}

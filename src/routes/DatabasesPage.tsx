@@ -13,18 +13,22 @@ interface DatabaseOptionProps {
   filename: string
   mtime: string
   setShowDeleteDialog: Function
+  setActiveFilename: Function
 }
 
-function DatabaseOption({ filename, mtime, setShowDeleteDialog }: DatabaseOptionProps) {
+function DatabaseOption({ filename, mtime, setShowDeleteDialog, setActiveFilename }: DatabaseOptionProps) {
   const [password, setPassword] = useState("");
   const [hidePassword, setHidePassword] = useState<"text" | "password">("password")
 
   return (
     <li className="text-slate-400 px-4 h-15  relative border-slate-900 bg-mirage-300/20 hover:bg-mirage-300/10 transition-colors duration-150 ease-in-out hover:bg-mirage-4000/25 border-y py-1.5 flex items-center justify-between">
-      <button onClick={() => setShowDeleteDialog(true)} className="hover:rotate-5 rotate-0 self-end mb-2">
-        <TrashIcon className="btn-icon !mx-0 !mr-3 text-danger-500/60 hover:text-danger-500" />
+      <button onClick={() => {
+        setShowDeleteDialog(true)
+        setActiveFilename(filename)
+      }} className="hover:rotate-5 rotate-0 self-end mb-2">
+        <TrashIcon className="btn-icon !mx-0 !mr-3 text-danger-500/60 scale-100 hover:scale-105 hover:text-danger-500" />
       </button>
-      <h3 class="text-slate-400 w-52 text-lg relative top-2"><span class="text-sm text-slate-600 absolute -top-4 -left-0.5">Filename</span>{filename}
+      <h3 class="text-slate-400 w-52 text-lg relative top-2"><span class="text-sm text-slate-600 absolute -top-4 -left-0.5">Filename</span>{filename.split("/").pop()}
       </h3>
       <h3 class="text-slate-400 w-64 text-lg relative top-2"><span class="text-sm text-slate-600 absolute -top-4 -left-0.5">Modified</span>{mtime}
       </h3>
@@ -59,28 +63,120 @@ export default function DatabasesPage() {
 
   const [databases, setDatabases] = useState([]);
 
-  const refreshDbList = async () => {
-    let dbs: object[] | undefined = await invoke("ls_dbs")
-    if (dbs) setDatabases(dbs)
-  }
+  const refreshDbList = () => invoke("ls_dbs").then((dbs: object[]) => {
+    setDatabases(dbs)
+  })
 
   useEffect(() => {
-    async function doOnce() {
-      let venvPath: string | undefined = await store.get("venv_path")
-      if (venvPath) setVenvValue(venvPath)
-      let pluginsPath: string | undefined = await store.get("plugins_path")
-      if (pluginsPath) setPluginsValue(pluginsPath)
-      await refreshDbList()
-    }
-    doOnce()
+    store.get("venv_path").then((venvPath: string) => setVenvValue(venvPath))
+    store.get("plugins_path").then((pluginsPath: string) => setPluginsValue(pluginsPath))
+    refreshDbList()
   }, [])
 
-  const [createPassword, setCreatePassword] = useState<string>("")
-  const [createFilename, setCreateFilename] = useState<string>("")
-  const [transformResult, setTransformResult] = useState<any>("")
+  const [createPassword, setCreatePassword] = useState("")
+  const [createFilename, setCreateFilename] = useState("")
+  const [activeFilename, setActiveFilename] = useState("");
 
   return (
     <>
+      <main className="mt-40 flex items-center w-full flex-col h-full relative ">
+        <section className="flex flex-col bg-gray-700/55 backdrop-blur-sm rounded-lg shadow-sm shadow-gray-600/60 py-6 p-10 min-w-[60rem]">
+          <div className="flex justify-between mb-6">
+            <h2 className="text-slate-300/90 text-2xl mr-64 font-display border-b-4 border-b-primary pr-2 relative">
+              Databases
+              <QuestionMarkCircleIcon
+                title="View a list of the encrypted databases you have access to"
+                className="h-5 text-slate-600 -top-1 absolute -right-4"
+              />
+            </h2>
+            <div className="flex">
+              <PrimaryBtn onClick={() => setShowCreateDialog(true)}>
+                Create Database
+                <LockClosedIcon className="btn-icon" />
+              </PrimaryBtn>
+            </div>
+          </div>
+          <ul className="pb-6 h-72 flex flex-col  justify-start ">
+            {databases && databases?.length === 0 ? (
+              <li className="text-slate-400 px-4 h-full border-slate-900 rounded-md bg-mirage-400/20 hover:bg-mirage-4000/25 border-y py-4 flex items-end relative ">
+                <h3 class="text-slate-600 text-lg">No databases found.
+                  <ExclamationTriangleIcon className="h-6 bottom-4 mr-3 right-0 absolute text-slate-600/70" />
+                </h3>
+              </li>
+            ) : (
+              <li class="overflow-y-scroll">
+                {databases.map((db) =>
+                  <DatabaseOption
+                    setActiveFilename={setActiveFilename}
+                    filename={db.name}
+                    mtime={new Date(db.mtime).toLocaleString()}
+                    setShowDeleteDialog={setShowDeleteDialog}
+                  />
+                )}
+              </li>
+            )}
+          </ul>
+          <hr className="pt-6 text-mirage-400/60" />
+          <div className="flex justify-between">
+            <h2 className="text-slate-300/90 text-2xl relative font-display border-b-4 border-b-primary pr-2 ">
+              Local Plugins
+              <QuestionMarkCircleIcon
+                title="Select a plugins folder to gain access to OSINTBuddy entities."
+                className="h-5 absolute -top-2 -right-3 text-slate-600"
+              />
+            </h2>
+          </div>
+          <ul>
+            <li className="text-slate-300/90 flex flex-col pt-6">
+              <h3 class="font-display mb-2">Python Virtual Environment Path</h3>
+              <div className="flex relative">
+                <DirectoryInput
+                  onBlur={async (e) => {
+                    await store.set("venv_path", e.currentTarget.value)
+                  }}
+                  value={venvValue}
+                  onChange={(e) => setVenvValue(e.currentTarget.value)}
+                  onBtnClick={() => open({
+                    multiple: false,
+                    directory: true,
+                  }).then((venvDirectory: string) => {
+                    store.set("venv_path", venvDirectory)
+                    setVenvValue(venvDirectory)
+                  })}
+                />
+                <QuestionMarkCircleIcon
+                  title="Select the python3 virtual environment (venv) where the osintbuddy package is installed."
+                  className="h-5 text-slate-600 -top-7 absolute right-0"
+                />
+              </div>
+            </li>
+            <li className="text-slate-300/90 flex flex-col pt-5">
+              <h3 class="font-display mb-2">Entity Plugins Path</h3>
+              <div className="flex relative">
+                <DirectoryInput
+                  onBlur={async (e) => {
+                    await store.set("venv_path", e.currentTarget.value)
+                  }}
+                  onChange={(e) => setPluginsValue(e.currentTarget.value)}
+                  value={pluginsValue}
+                  onBtnClick={() => open({
+                    multiple: false,
+                    directory: true,
+                  }).then((pluginsDirectory: string) => {
+                    store.set("plugins_path", pluginsDirectory)
+                    setPluginsValue(pluginsDirectory)
+                  })}
+                />
+                <QuestionMarkCircleIcon
+                  title="Select the directory that contains OSINTBuddy Python plugins."
+                  className="h-5 text-slate-600 -top-7 absolute right-0"
+                />
+              </div>
+            </li>
+          </ul>
+        </section>
+      </main>
+
       <Dialog open={showCreateDialog} onClose={() => setShowCreateDialog(false)} className="relative z-50">
         <div className="fixed inset-0 flex w-screen items-center bg-gray-900/95 backdrop-blur-2xl  justify-center px-4">
           <DialogPanel className="relative flex flex-col from-gray-700/90 to-gray-800/80 bg-gradient-to-br rounded-lg shadow-sm shadow-gray-600/60 pt-6">
@@ -110,8 +206,8 @@ export default function DatabasesPage() {
               </button>
               <button
                 className="w-full flex items-centers justify-center py-2  border-primary bg-primary hover:bg-primary-500 transition-colors ease-in-out rounded-br-lg border-2 text-slate-300 mb-0.5"
-                onClick={async () => {
-                  await invoke("create_db", { filename: createFilename, password: createPassword })
+                onClick={() => {
+                  invoke("create_db", { filename: createFilename, password: createPassword })
                   setShowCreateDialog(false)
                   refreshDbList()
                 }}>
@@ -140,105 +236,19 @@ export default function DatabasesPage() {
               </button>
               <button
                 className="w-full border-danger-600 bg-danger-600 hover:bg-danger-500 flex items-centers justify-center py-2  transition-colors ease-in-out rounded-br-lg border-2 text-slate-300"
-                onClick={async () => {
-                  alert("todo write rust delete function")
+                onClick={() => {
+                  console.log(activeFilename)
+                  invoke("delete_file", { filename: activeFilename })
+                  refreshDbList()
+                  setShowDeleteDialog(false)
                 }}>
-                Delete
+                Confirm delete
               </button>
             </section>
           </DialogPanel>
         </div>
       </Dialog>
-      <main className="mt-40 flex items-center w-full flex-col h-full relative ">
-        <section className="flex flex-col bg-gray-700/55 backdrop-blur-sm rounded-lg shadow-sm shadow-gray-600/60 py-6 p-10 min-w-[60rem]">
-          <div className="flex justify-between mb-6">
-            <h2 className="text-slate-300/90 text-2xl mr-64 font-display border-b-4 border-b-primary pr-2 relative">
-              Databases
-              <QuestionMarkCircleIcon title="View a list of the encrypted databases you have access to" className="h-5 text-slate-600 -top-1 absolute -right-4" />
-            </h2>
-            <div className="flex">
-              <PrimaryBtn onClick={() => setShowCreateDialog(true)}>
-                Create Database
-                <LockClosedIcon className="btn-icon" />
-              </PrimaryBtn>
-            </div>
-          </div>
-          <ul className="pb-6 h-72 flex flex-col  justify-start ">
-            {databases && databases?.length === 0 ? (
-              <li className="text-slate-400 px-4 h-full border-slate-900 rounded-md bg-mirage-400/20 hover:bg-mirage-4000/25 border-y py-4 flex items-end relative ">
-                <h3 class="text-slate-600 text-lg">No databases found.
-                  <ExclamationTriangleIcon className="h-6 bottom-4 mr-3 right-0 absolute text-slate-600/70" />
-                </h3>
-              </li>
-            ) : (
-              <li class="overflow-y-scroll">
-                {databases.map((db) =>
-                  <DatabaseOption
-                    filename={db.name.split("/").pop()}
-                    mtime={new Date(db.mtime).toLocaleString()}
-                    setShowDeleteDialog={setShowDeleteDialog}
-                  />
-                )}
-              </li>
-            )
-            }
-          </ul>
-          <hr className="pt-6 text-mirage-400/60" />
-          <div className="flex justify-between">
-            <h2 className="text-slate-300/90 text-2xl relative font-display border-b-4 border-b-primary pr-2 ">
-              Local Plugins
-              <QuestionMarkCircleIcon title="Select a plugins folder to gain access to OSINTBuddy entities." className="h-5 absolute -top-2 -right-3 text-slate-600" />
-            </h2>
-          </div>
-          <ul>
-            <li className="text-slate-300/90 flex flex-col pt-6">
-              <h3 class="font-display mb-2">Python Virtual Environment Path</h3>
-              <div className="flex relative">
-                <DirectoryInput
-                  onBlur={async (e) => {
-                    await store.set("venv_path", e.currentTarget.value)
-                  }}
-                  value={venvValue}
-                  onChange={(e) => setVenvValue(e.currentTarget.value)}
-                  onBtnClick={async () => {
-                    const venvDirectory = await open({
-                      multiple: false,
-                      directory: true,
-                    });
-                    if (venvDirectory) {
-                      await store.set("venv_path", venvDirectory)
-                      setVenvValue(venvDirectory)
-                    }
-                  }}
-                />
-                <QuestionMarkCircleIcon title="Select the python3 virtual environment (venv) where the osintbuddy package is installed." className="h-5 text-slate-600 -top-7 absolute right-0" />
-              </div>
-            </li>
-            <li className="text-slate-300/90 flex flex-col pt-5">
-              <h3 class="font-display mb-2">Entity Plugins Path</h3>
-              <div className="flex relative">
-                <DirectoryInput
-                  onBlur={async (e) => {
-                    await store.set("venv_path", e.currentTarget.value)
-                  }}
-                  onChange={(e) => setPluginsValue(e.currentTarget.value)}
-                  value={pluginsValue}
-                  onBtnClick={async () => {
-                    const pluginDirectory = await open({
-                      multiple: false,
-                      directory: true,
-                    });
-                    if (pluginDirectory) {
-                      await store.set("plugins_path", pluginDirectory)
-                      setPluginsValue(pluginDirectory)
-                    }
-                  }} />
-                <QuestionMarkCircleIcon title="Select the directory that contains OSINTBuddy Python plugins." className="h-5 text-slate-600 -top-7 absolute right-0" />
-              </div>
-            </li>
-          </ul>
-        </section>
-        {/* <button className="bg-success opacity-60" onClick={async () => {
+      {/* <button className="bg-success opacity-60" onClick={async () => {
           const data = await invoke("run_transform", {
             source: JSON.stringify(
               { "id": "1125899906842654", "data": { "label": "Website", "color": "#1D1DB8", "icon": "world-www", "elements": [{ "value": "github.com", "icon": "world-www", "label": "Domain", "type": "text" }] }, "position": { "x": 5275.072364647034, "y": 3488.8488109543805 }, "transform": "To IP" }
@@ -249,7 +259,6 @@ export default function DatabasesPage() {
         }}>
           Test {transformResult && JSON.stringify(transformResult)}
         </button> */}
-      </main>
     </>
   )
 }

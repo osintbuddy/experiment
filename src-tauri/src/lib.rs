@@ -1,11 +1,7 @@
-use std::env;
-
-use tauri::Manager;
 use tauri_plugin_store::StoreExt;
 
 mod venv;
 mod db;
-
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -26,13 +22,8 @@ pub fn run() {
             db::ls_dbs,
             db::unlock_db,
             db::delete_file,
-            db::create_db,
-            show_main_window])
+            db::create_db
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
-}
-
-#[tauri::command]
-fn show_main_window(window: tauri::Window) {
-    window.get_webview_window("main").unwrap().show().unwrap(); // replace "main" by the name of your window
 }

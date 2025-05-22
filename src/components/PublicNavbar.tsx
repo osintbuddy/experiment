@@ -158,18 +158,47 @@ export default function PublicNavbar(): JSX.Element {
       )}
     >
       <div className="relative flex flex-grow basis-0 items-center">
-        <Link to="/">
-          {/* @ts-ignore */}
+        <Link to="/" replace>
           <img className="hidden h-10 fill-slate-600 lg:block" src={Logo} />
         </Link>
       </div>
-      <div className="ml-auto relative flex basis-0 justify-end mr-2 gap-6 sm:gap-8 md:flex-grow">
-        <a href="https://discord.gg/gsbbYHA3K3" className="group" aria-label="Discord">
+      <div className="ml-auto relative flex  basis-0 justify-end mr-2 gap-6 sm:gap-8 md:flex-grow">
+        <a
+          title="OSINTBuddy on Discord"
+          href="https://discord.gg/gsbbYHA3K3"
+          className="group"
+          aria-label="Discord"
+        >
           <Icon icon="brand-discord" className="h-6 w-6 transition-colors duration-150 ease-in-out text-slate-500 hover:text-slate-300 focus:text-slate-300" />
         </a>
       </div>
+      <div className="relative flex mr-2 ">
+        <a
+          title="OSINTBuddy on Matrix"
+          href="https://todooooooooooo.com"
+          className="group"
+          aria-label="Matrix"
+        >
+          <Icon icon="brand-matrix" className="h-6 w-6 transition-colors duration-150 ease-in-out text-slate-500 hover:text-slate-300 focus:text-slate-300" />
+        </a>
+      </div>
+      <div className="relative flex mr-2 ">
+        <a
+          title="OSINTBuddy on Codeberg"
+          href="https://codeberg.org/osintbuddy"
+          className="group"
+          aria-label="Codeberg"
+        >
+          <Icon icon="brand-git" className="h-6 w-6 transition-colors duration-150 ease-in-out text-slate-500 hover:text-slate-300 focus:text-slate-300" />
+        </a>
+      </div>
       <div className="relative flex justify-end">
-        <a href="https://github.com/jerlendds/osintbuddy" className="group" aria-label="GitHub">
+        <a
+          title="OSINTBuddy on Github"
+          href="https://github.com/jerlendds/osintbuddy"
+          className="group"
+          aria-label="GitHub"
+        >
           <Icon icon="brand-github" className="h-6 w-6 transition-colors duration-150 ease-in-out text-slate-500 hover:text-slate-300 focus:text-slate-300" />
         </a>
       </div>

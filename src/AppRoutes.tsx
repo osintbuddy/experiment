@@ -37,7 +37,6 @@ const router = createBrowserRouter([
 
 
 export default function AppRoutes(): JSX.Element {
-  useMountEffect(() => invoke('show_main_window'))
   return (
       <RouterProvider router={router} />
   );

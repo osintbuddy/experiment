@@ -8,6 +8,7 @@ import { Description, Dialog, DialogPanel, DialogTitle } from '@headlessui/react
 import DirectoryInput from "../components/inputs/DirectoryInput";
 import Button from "../components/buttons/Button";
 import GhostButton from "../components/buttons/GhostButton";
+import { useMountEffect } from "../app/hooks";
 
 
 interface DatabaseOptionProps {
@@ -71,12 +72,12 @@ export default function DatabasesPage() {
     setDatabases(dbs)
   })
 
-  useEffect(() => {
+  useMountEffect(() => {
     store.get("venv_path").then((venvPath: string) => setVenvValue(venvPath))
     store.get("plugins_path").then((pluginsPath: string) => setPluginsValue(pluginsPath))
     refreshDbList()
-  }, [])
-
+  })
+  
   const [createPassword, setCreatePassword] = useState("")
   const [createFilename, setCreateFilename] = useState("")
   const [activeFilename, setActiveFilename] = useState("");
@@ -141,8 +142,10 @@ export default function DatabasesPage() {
                     multiple: false,
                     directory: true,
                   }).then((venvDirectory: string) => {
-                    store.set("venv_path", venvDirectory)
-                    setVenvValue(venvDirectory)
+                    if (venvDirectory) {
+                      store.set("venv_path", venvDirectory)
+                      setVenvValue(venvDirectory)
+                    }
                   })}
                 />
                 <QuestionMarkCircleIcon
@@ -161,8 +164,10 @@ export default function DatabasesPage() {
                     multiple: false,
                     directory: true,
                   }).then((pluginsDirectory: string) => {
-                    store.set("plugins_path", pluginsDirectory)
-                    setPluginsValue(pluginsDirectory)
+                    if (pluginsDirectory) {
+                      store.set("plugins_path", pluginsDirectory)
+                      setPluginsValue(pluginsDirectory)
+                    }
                   })}
                 />
                 <QuestionMarkCircleIcon

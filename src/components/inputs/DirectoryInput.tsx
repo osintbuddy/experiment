@@ -19,9 +19,9 @@ export default function DirectoryInput(props: InputProps) {
       <button
         onClick={() => onBtnClick()}
         title="Select directory" 
-        className="inset-ring-1 inset-ring-primary-400/95 whitespace-nowrap focus:ring-primary-300/90 hover:inset-ring-primary-400 text-left text-sm font-medium tracking-wide scale-100 hover:scale-[99%]  flex items-center border-2 border-primary-400/95 focus:border-primary-300/90 hover:border-primary-400 px-5 font-display  hover:shadow justify-center transition-all duration-75 ease-linear  rounded-xs text-slate-400 hover:text-slate-300/70 hover:scale-105 group"
+        className="inset-ring-1 inset-ring-primary-400/95 whitespace-nowrap focus:ring-primary-300/90 hover:inset-ring-primary-400 text-left text-sm font-medium tracking-wide scale-100 hover:scale-[99%]  flex items-center border-1 border-primary-400/95 focus:border-primary-300/90 hover:border-primary-400 px-5 font-display  hover:shadow justify-center transition-all duration-100 ease-linear  rounded-xs text-slate-400 hover:text-slate-300/70 hover:scale-105 group"
       >
-        <FolderIcon className="h-5 text-slate-400/80 group-hover:text-slate-300/70 group-hover:rotate-5 rotate-0 absolute left-2.5 top-[5px]" />
+        <FolderIcon className="h-5 text-slate-400/80 group-hover:text-slate-300/70 group-hover:rotate-5 rotate-0 absolute left-2.5 top-1.5" />
       </button>
     </div>
   )

@@ -17,8 +17,12 @@ export default function DashboardPage() {
   return (
     <>
       <h2>Dashboard</h2>
-      <button>
-
+      <button onClick={() => {
+        invoke("insert_graph", {label: 'first', description: 'desc'}).then(data => {
+          console.log(data)
+        }).catch(error => console.warn(error))
+      }}>
+        Insert graph
       </button>
     </>
   )

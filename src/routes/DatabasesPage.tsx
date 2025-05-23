@@ -12,14 +12,14 @@ import { useMountEffect } from "../app/hooks";
 import PasswordInput from "../components/inputs/PasswordInput";
 
 
-interface DatabaseOptionProps {
+interface DbOptionProps {
   filename: string
   mtime: string
   setShowDeleteDialog: Function
   setActiveFilename: Function
 }
 
-function DatabaseOption({ filename, mtime, setShowDeleteDialog, setActiveFilename }: DatabaseOptionProps) {
+function DatabaseOption({ filename, mtime, setShowDeleteDialog, setActiveFilename }: DbOptionProps) {
   const [password, setPassword] = useState("");
 
   return (
@@ -222,10 +222,6 @@ export default function DatabasesPage() {
               />
               <h3 class="text-slate-400 text-lg relative w-full mb-6 mt-10">
                 <span class="text-sm text-slate-600 absolute -top-6 -left-0.5">Password</span>
-                {/* <input
-                  
-                  class="hover:border-primary border border-slate-900 focus:bg-mirage-900/60 bg-mirage-300/20 w-full transition-colors duration-150 px-2 rounded outline-1 outline-slate-900 text-slate-300/80 focus:outline-2 focus:stroke-primary focus:outline-primary py-1 mb-3"
-                /> */}
                 <PasswordInput
                   value={createPassword}
                   onInput={(e) => setCreatePassword(e.currentTarget.value)}
@@ -233,7 +229,6 @@ export default function DatabasesPage() {
                   placeholder="Your password"
                   className={"!w-full"}
                 />
-    
               </h3>
             </section>
             <section className="flex bottom-4 right-15">

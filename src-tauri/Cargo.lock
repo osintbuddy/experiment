@@ -3230,7 +3230,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "osib"
+name = "osintbuddy"
 version = "0.1.0"
 dependencies = [
  "anyhow",
@@ -3248,6 +3248,7 @@ dependencies = [
  "tauri-plugin-fs-pro",
  "tauri-plugin-opener",
  "tauri-plugin-store",
+ "thiserror 2.0.12",
  "tokio",
 ]
 

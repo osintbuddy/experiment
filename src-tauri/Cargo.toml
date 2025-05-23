@@ -1,9 +1,9 @@
 [package]
-name = "osib"
+name = "osintbuddy"
 version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
-edition = "2021"
+description = "The OSINTBuddy App"
+authors = ["jerlendds"]
+edition = "2024"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -35,3 +35,4 @@ libsqlite3-sys = { version = "0.30.1", features = [
     "bundled-sqlcipher"
 ] }
 glob = "0.3.2"
+thiserror = "2.0.12"

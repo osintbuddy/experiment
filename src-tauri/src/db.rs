@@ -1,22 +1,21 @@
 use dirs;
-use sqlx::sqlite::{SqliteConnectOptions};
-use sqlx::{Pool, Sqlite, SqlitePool};
 use std::fs;
 use std::path::Path;
 use std::str::FromStr;
+use sqlx::sqlite::{SqliteConnectOptions};
+use sqlx::{Pool, Sqlite, SqlitePool};
 use serde::{Deserialize, Serialize};
-use std::time::UNIX_EPOCH;
 use glob::glob;
 use sqlx;
 
-use crate::db;
+use crate::utils::file_modified_time_in_seconds;
+use crate::{db, errs};
 
 #[derive(Deserialize, Serialize)]
 pub struct File {
     name: String,
     mtime: u128
 }
-
 
 #[derive(Deserialize, Serialize, Debug, sqlx::FromRow)]
 pub struct Graph {
@@ -39,11 +38,8 @@ pub async fn get_db(filepath: &str, password: &str) -> Result<Pool<Sqlite>, sqlx
         .create_if_missing(true);
 
     match SqlitePool::connect_with(sqlite_options).await {
-        Ok(p) => return Ok(p),
-        Err(error) => {
-            println!("error getting db pool: {}", error);
-            return Err(error);
-        },
+        Ok(pool) => return Ok(pool),
+        Err(error) => return Err(error),
     }
 }
 
@@ -61,33 +57,24 @@ pub fn ls_dbs() -> Vec<File>  {
     return files;
 }
 
-fn file_modified_time_in_seconds(path: &str) -> u128 {
-    fs::metadata(path)
-    .unwrap()
-    .modified()
-    .unwrap()
-    .duration_since(UNIX_EPOCH)
-    .unwrap()
-    .as_millis()
+
+async fn handle_migration(conn: &Pool<Sqlite>) -> Result<(), std::string::String> {
+    let migrator_result = sqlx::migrate::Migrator::new(Path::new("./src/migrations")).await;
+    let migrator = migrator_result.unwrap_or_else(|error| {
+        panic!("Problem creating the migrator: {error:?}")
+    });
+    migrator.run(conn).await.map_err(|err| {
+        err.to_string()
+    })
 }
 
 #[tauri::command]
-pub async fn unlock_db(filename: String, password: String) -> Vec<Graph> {
-    let conn = db::get_db(&filename, &password).await;
-
-    match &conn {
-        Ok(conn) => {
-            let migrator = sqlx::migrate::Migrator::new(Path::new("./src/migrations")).await.expect("error");
-            migrator.run(conn).await.expect("Error running migrator");
-            let rows: Vec<Graph> = sqlx::query_as::<_, Graph>("SELECT * FROM graphs").fetch_all(conn).await.unwrap();
-            conn.close().await;
-            return rows;
-        },
-        Err(error) => {
-            println!("unlock_db failed to get conn {}", error);
-            return Vec::new();
-        },
-    };
+pub async fn unlock_db(filename: String, password: String) -> Result<Vec<Graph>, String> {
+    let conn = db::get_db(&filename, &password).await.expect("error unlocking db");
+    handle_migration(&conn).await?;
+    let query_result = sqlx::query_as::<_, Graph>("SELECT * FROM graphs").fetch_all(&conn).await;
+    conn.close().await;
+    query_result.map_err(|err| { err.to_string() })
 }
 
 #[tauri::command]
@@ -97,9 +84,7 @@ pub async fn create_db(filename: String, password: String) {
 }
 
 #[tauri::command]
-pub fn delete_file(filename: String) {
-    match fs::remove_file(&filename) {
-        Ok(()) => (),
-        Err(error) => println!("File deletion error: {}", error)
-    };
+pub fn delete_db(filename: String) -> Result<(), errs::Error> {
+    fs::remove_file(&filename)?;
+    Ok(())
 }

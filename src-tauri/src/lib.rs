@@ -2,6 +2,8 @@ use tauri_plugin_store::StoreExt;
 
 mod venv;
 mod db;
+mod errs;
+mod utils;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -21,7 +23,7 @@ pub fn run() {
             venv::run_transform,
             db::ls_dbs,
             db::unlock_db,
-            db::delete_file,
+            db::delete_db,
             db::create_db
         ])
         .run(tauri::generate_context!())

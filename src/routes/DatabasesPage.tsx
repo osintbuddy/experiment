@@ -1,33 +1,46 @@
-import { LockClosedIcon, QuestionMarkCircleIcon, ExclamationTriangleIcon, KeyIcon, EyeIcon, EyeSlashIcon, TrashIcon } from "@heroicons/react/20/solid";
+import { LockClosedIcon, QuestionMarkCircleIcon, ExclamationTriangleIcon, KeyIcon, TrashIcon } from "@heroicons/react/20/solid";
 import { open } from '@tauri-apps/plugin-dialog';
 import { useState } from "preact/hooks";
-import { LazyStore } from '@tauri-apps/plugin-store';
 import { invoke } from "@tauri-apps/api/core";
 import { Description, Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
-
+import { useNavigate } from "react-router-dom";
+import type { NavigateFunction } from "react-router-dom"
 import FileInput from "../components/inputs/DirectoryInput";
 import Button from "../components/buttons/Button";
 import GhostButton from "../components/buttons/GhostButton";
 import { useMountEffect } from "../app/hooks";
 import PasswordInput from "../components/inputs/PasswordInput";
+import { store } from "../app/tauri";
+import { toast } from "react-toastify";
 
 
 interface DbOptionProps {
-  filename: string
+  filepath: string
   mtime: string
   setShowDeleteDialog: Function
   setActiveFilename: Function
+  navigate:  NavigateFunction
 }
 
-function DatabaseOption({ filename, mtime, setShowDeleteDialog, setActiveFilename }: DbOptionProps) {
-  const [password, setPassword] = useState("");
-  
+function DatabaseOption({ filepath, mtime, setShowDeleteDialog, setActiveFilename, navigate }: DbOptionProps) {
+
+  const onSubmit = (e) => {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget);
+    const password = formData.get("password");
+    invoke("unlock_db", { filepath, password })
+      .then((wtf) => {
+        console.log(wtf, filepath, password)
+        navigate("/dashboard")
+      })
+      .catch(error => toast.error(error))
+  }
   return (
     <li className="text-slate-400 px-4 h-15 relative border-mirage-600 bg-mirage-400/20 hover:bg-mirage-300/15 transition-colors duration-150 ease-in-out hover:bg-mirage-4000/25 border-y py-1.5 flex items-center justify-between">
       <button
         onClick={() => {
           setShowDeleteDialog(true)
-          setActiveFilename(filename)
+          setActiveFilename(filepath)
         }}
         className="hover:rotate-5 rotate-0 self-end mb-2"
       >
@@ -37,7 +50,7 @@ function DatabaseOption({ filename, mtime, setShowDeleteDialog, setActiveFilenam
         <span class="text-sm text-slate-600 absolute -top-4 -left-0.5">
           Filename
         </span>
-        {filename.split("/").pop()}
+        {filepath.split("/").pop()}
       </h3>
       <h3 class="text-slate-400 w-64 text-lg relative top-2">
         <span class="text-sm text-slate-600 absolute -top-4 -left-0.5">
@@ -45,27 +58,28 @@ function DatabaseOption({ filename, mtime, setShowDeleteDialog, setActiveFilenam
         </span>
         {mtime}
       </h3>
-      <PasswordInput
-        onInput={(e) => setPassword(e.currentTarget.value)}
-        placeholder="Your password"
-        value={password}
-      />
-      <GhostButton
-        className="ml-4"
-        btnStyle="primary"
-        onClick={() => {
-          invoke("unlock_db", { filename, password }).catch(error => console.warn(error))
-        }}
+      <form
+        onSubmit={onSubmit}
+        className="flex"
       >
-        Unlock
-        <KeyIcon className="btn-icon" />
-      </GhostButton>
+        <PasswordInput
+          placeholder="Your password"
+          name="password"
+        />
+        <GhostButton
+          className="ml-4"
+          btnStyle="primary"
+        >
+          Unlock
+          <KeyIcon className="btn-icon" />
+        </GhostButton>
+      </form>
     </li>
   )
 }
 
 export default function DatabasesPage() {
-  const store = new LazyStore(".settings.json");
+  const navigate = useNavigate();
 
   let [showCreateDialog, setShowCreateDialog] = useState(false)
   let [showDeleteDialog, setShowDeleteDialog] = useState(false)
@@ -75,7 +89,7 @@ export default function DatabasesPage() {
 
   const [databases, setDatabases] = useState([]);
 
-  const refreshDbList = () => invoke("ls_dbs").then((dbs: object[]) => {
+  const refreshDbList = () => invoke("list_dbs").then((dbs: object[]) => {
     setDatabases(dbs)
   })
 
@@ -88,7 +102,6 @@ export default function DatabasesPage() {
   const [createPassword, setCreatePassword] = useState("")
   const [createFilename, setCreateFilename] = useState("")
   const [activeFilename, setActiveFilename] = useState("");
-
   return (
     <>
       <main className="mt-40 flex items-center w-full flex-col h-full relative ">
@@ -121,9 +134,10 @@ export default function DatabasesPage() {
                 {databases.sort((a, b) => new Date(b.mtime) - new Date(a.mtime)).map((db) =>
                   <DatabaseOption
                     setActiveFilename={setActiveFilename}
-                    filename={db.name}
+                    filepath={db.filepath}
                     mtime={new Date(db.mtime).toLocaleString()}
                     setShowDeleteDialog={setShowDeleteDialog}
+                    navigate={navigate}
                   />
                 )}
               </li>

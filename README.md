@@ -1,7 +1,7 @@
 > [!WARNING]  
 > This is nothing more than code exploration for the time being and I haven't fully committed to a Rust rewrite, I'm also still in the process of learning Rust...
 
-![progress](https://github.com/user-attachments/assets/b0770960-1e44-4ecc-8b55-7b789cf23ae1)
+![progress](https://github.com/user-attachments/assets/b70d5d27-ea68-41ef-8f21-fbbaeeb7fadf)
 
 # Experimenting with a Tauri + Preact + Typescript version of OSINTBuddy
 

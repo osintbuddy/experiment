@@ -1,4 +1,7 @@
 use dirs;
+use sqlx::migrate::MigrateError;
+use tauri::{AppHandle, Manager, State};
+use tokio::sync::Mutex;
 use std::fs;
 use std::path::Path;
 use std::str::FromStr;
@@ -9,7 +12,7 @@ use glob::glob;
 use sqlx;
 
 use crate::utils::file_modified_time_in_seconds;
-use crate::{db, errs};
+use crate::{db, errs, DbState};
 
 #[derive(Deserialize, Serialize)]
 pub struct File {
@@ -17,14 +20,6 @@ pub struct File {
     mtime: u128
 }
 
-#[derive(Deserialize, Serialize, Debug, sqlx::FromRow)]
-pub struct Graph {
-    id: i32,
-    graphid: String,
-    label: String,
-    description: String,
-    ctime: i32,
-}
 
 pub fn get_data_path() -> String {
     let data_dir = dirs::data_local_dir().unwrap();
@@ -57,7 +52,6 @@ pub fn ls_dbs() -> Vec<File>  {
     return files;
 }
 
-
 async fn handle_migration(conn: &Pool<Sqlite>) -> Result<(), std::string::String> {
     let migrator_result = sqlx::migrate::Migrator::new(Path::new("./src/migrations")).await;
     let migrator = migrator_result.unwrap_or_else(|error| {
@@ -69,12 +63,13 @@ async fn handle_migration(conn: &Pool<Sqlite>) -> Result<(), std::string::String
 }
 
 #[tauri::command]
-pub async fn unlock_db(filename: String, password: String) -> Result<Vec<Graph>, String> {
-    let conn = db::get_db(&filename, &password).await.expect("error unlocking db");
-    handle_migration(&conn).await?;
-    let query_result = sqlx::query_as::<_, Graph>("SELECT * FROM graphs").fetch_all(&conn).await;
-    conn.close().await;
-    query_result.map_err(|err| { err.to_string() })
+pub async fn unlock_db(filepath: String, password: String, app: AppHandle) -> Result<(), std::string::String> {
+    let state = app.state::<Mutex<DbState>>();
+    let mut state = state.lock().await;
+    state.dbpath = filepath;
+    state.password = password;
+    let conn = db::get_db(&state.dbpath, &state.password).await.expect("error unlocking db");
+    handle_migration(&conn).await
 }
 
 #[tauri::command]

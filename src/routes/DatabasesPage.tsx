@@ -1,16 +1,15 @@
 import { LockClosedIcon, QuestionMarkCircleIcon, ExclamationTriangleIcon, KeyIcon, EyeIcon, EyeSlashIcon, TrashIcon } from "@heroicons/react/20/solid";
 import { open } from '@tauri-apps/plugin-dialog';
-import { useEffect, useState } from "preact/hooks";
+import { useState } from "preact/hooks";
 import { LazyStore } from '@tauri-apps/plugin-store';
 import { invoke } from "@tauri-apps/api/core";
 import { Description, Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
 
-import DirectoryInput from "../components/inputs/DirectoryInput";
+import FileInput from "../components/inputs/DirectoryInput";
 import Button from "../components/buttons/Button";
 import GhostButton from "../components/buttons/GhostButton";
 import { useMountEffect } from "../app/hooks";
-import { useAtom } from "jotai";
-import { graphsAtom } from "../app/atoms";
+import PasswordInput from "../components/inputs/PasswordInput";
 
 
 interface DatabaseOptionProps {
@@ -22,9 +21,6 @@ interface DatabaseOptionProps {
 
 function DatabaseOption({ filename, mtime, setShowDeleteDialog, setActiveFilename }: DatabaseOptionProps) {
   const [password, setPassword] = useState("");
-  const [hidePassword, setHidePassword] = useState<"text" | "password">("password")
-
-  const [graphs, setGraphs] = useAtom(graphsAtom)
 
   return (
     <li className="text-slate-400 px-4 h-15 relative border-mirage-600 bg-mirage-400/20 hover:bg-mirage-300/15 transition-colors duration-150 ease-in-out hover:bg-mirage-4000/25 border-y py-1.5 flex items-center justify-between">
@@ -37,27 +33,32 @@ function DatabaseOption({ filename, mtime, setShowDeleteDialog, setActiveFilenam
       >
         <TrashIcon className="btn-icon !mx-0 !mr-3 text-danger-500/60 scale-100 hover:scale-105 hover:text-danger-500" />
       </button>
-      <h3 class="text-slate-400 w-52 text-lg relative top-2"><span class="text-sm text-slate-600 absolute -top-4 -left-0.5">Filename</span>{filename.split("/").pop()}
+      <h3 class="text-slate-400 w-52 text-lg relative top-2">
+        <span class="text-sm text-slate-600 absolute -top-4 -left-0.5">
+          Filename
+        </span>
+        {filename.split("/").pop()}
       </h3>
-      <h3 class="text-slate-400 w-64 text-lg relative top-2"><span class="text-sm text-slate-600 absolute -top-4 -left-0.5">Modified</span>{mtime}
+      <h3 class="text-slate-400 w-64 text-lg relative top-2">
+        <span class="text-sm text-slate-600 absolute -top-4 -left-0.5">
+          Modified
+        </span>
+        {mtime}
       </h3>
-      <div className="relative flex">
-        <input
-          onInput={(e) => setPassword(e.currentTarget.value)}
-          type={hidePassword}
-          class="mr-4 -top-4 hover:border-primary border w-64 border-slate-800 focus:bg-mirage-900/60 from-mirage-300/20 to-mirage-400/20 bg-linear-to-br not-last-of-type:text-lg transition-colors duration-150 px-3 rounded outline-1 outline-slate-900 focus:outline-2  focus:outline-primary py-1 border-r-none"
-          placeholder="Your password"
-          value={password}
-        />
-        <button onClick={() => hidePassword === 'password' ? setHidePassword("text") : setHidePassword("password")}>
-          {hidePassword === "password" ? <EyeIcon className="h-5 text-slate-600 right-6 absolute top-1.5" /> : <EyeSlashIcon className="h-5 text-slate-600 right-6 absolute top-1.5" />}
-        </button>
-      </div>
-      <GhostButton btnStyle="primary" onClick={() => {
-        invoke("unlock_db", { filename, password }).then((result) => {
-          console.log(result)
-        })
-      }}>
+      <PasswordInput
+        onInput={(e) => setPassword(e.currentTarget.value)}
+        placeholder="Your password"
+        value={password}
+      />
+      <GhostButton
+        className="ml-4"
+        btnStyle="primary"
+        onClick={() => {
+          invoke("unlock_db", { filename, password }).then((result) => {
+            console.log(result)
+          })
+        }}
+      >
         Unlock
         <KeyIcon className="btn-icon" />
       </GhostButton>
@@ -109,7 +110,7 @@ export default function DatabasesPage() {
               </Button>
             </div>
           </div>
-          <ul className="pb-6 h-72 flex flex-col  justify-start ">
+          <ul className="pb-6 h-80 flex flex-col  justify-start ">
             {databases && databases?.length === 0 ? (
               <li className="text-slate-400 px-4 h-full border-slate-900 rounded-md bg-mirage-400/20 hover:bg-mirage-4000/25 border-y py-4 flex items-end relative ">
                 <h3 class="text-slate-600 text-lg">No databases found.
@@ -118,7 +119,8 @@ export default function DatabasesPage() {
               </li>
             ) : (
               <li class="overflow-y-scroll">
-                {databases.map((db) =>
+                {/* @ts-ignore https://stackoverflow.com/a/10124053 */}
+                {databases.sort((a, b) => new Date(b.mtime) - new Date(a.mtime)).map((db) =>
                   <DatabaseOption
                     setActiveFilename={setActiveFilename}
                     filename={db.name}
@@ -143,7 +145,7 @@ export default function DatabasesPage() {
             <li className="text-slate-300/90 flex flex-col pt-6">
               <h3 class="font-display mb-2">Python Virtual Environment Path</h3>
               <div className="flex relative">
-                <DirectoryInput
+                <FileInput
                   value={venvValue}
                   onChange={(e) => setVenvValue(e.currentTarget.value)}
                   onBtnClick={() => open({
@@ -165,7 +167,7 @@ export default function DatabasesPage() {
             <li className="text-slate-300/90 flex flex-col pt-5">
               <h3 class="font-display mb-2">Entity Plugins Path</h3>
               <div className="flex relative">
-                <DirectoryInput
+                <FileInput
                   onChange={(e) => setPluginsValue(e.currentTarget.value)}
                   value={pluginsValue}
                   onBtnClick={() => open({
@@ -220,13 +222,18 @@ export default function DatabasesPage() {
               />
               <h3 class="text-slate-400 text-lg relative w-full mb-6 mt-10">
                 <span class="text-sm text-slate-600 absolute -top-6 -left-0.5">Password</span>
-                <input
+                {/* <input
+                  
+                  class="hover:border-primary border border-slate-900 focus:bg-mirage-900/60 bg-mirage-300/20 w-full transition-colors duration-150 px-2 rounded outline-1 outline-slate-900 text-slate-300/80 focus:outline-2 focus:stroke-primary focus:outline-primary py-1 mb-3"
+                /> */}
+                <PasswordInput
                   value={createPassword}
                   onInput={(e) => setCreatePassword(e.currentTarget.value)}
                   type="password"
                   placeholder="Your password"
-                  class="hover:border-primary border border-slate-900 focus:bg-mirage-900/60 bg-mirage-300/20 w-full transition-colors duration-150 px-2 rounded outline-1 outline-slate-900 text-slate-300/80 focus:outline-2 focus:stroke-primary focus:outline-primary py-1 mb-3"
+                  className={"!w-full"}
                 />
+    
               </h3>
             </section>
             <section className="flex bottom-4 right-15">
@@ -283,8 +290,7 @@ export default function DatabasesPage() {
               <button
                 className="w-full border-danger-600 bg-danger-600 hover:bg-danger-500 flex items-centers justify-center py-2  transition-colors ease-in-out rounded-br-lg border-2 text-slate-300"
                 onClick={() => {
-                  console.log(activeFilename)
-                  invoke("delete_file", { filename: activeFilename })
+                  invoke("delete_db", { filename: activeFilename }).catch((e) => console.warn(e))
                   refreshDbList()
                   setShowDeleteDialog(false)
                 }}>

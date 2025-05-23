@@ -13,7 +13,7 @@ export default function GhostButton(props: ButtonProps): JSX.Element {
   return (
       <button 
         {...props}
-        className={`ring-1 whitespace-nowrap  text-left text-sm font-medium tracking-wide hover:text-slate-300/70 text-slate-300/80 scale-100 hover:scale-[99%]  flex items-center border hover:ring-inset   py-2 px-5 font-display rounded-md  hover:shadow justify-center transition-all duration-75 ease-linear  ${styles[btnStyle]} ${className ? className : ''}`}>
+        className={`ring-1 whitespace-nowrap  text-left text-sm font-medium tracking-wide hover:text-slate-300/70 text-slate-300/80 scale-100 hover:scale-[99%]  flex items-center border hover:ring-inset   py-2 px-5 font-display rounded-md  hover:shadow justify-center transition-all duration-75 ease-linear  ${styles[btnStyle]} ${className ?? ''}`}>
         {children}
       </button>
   )

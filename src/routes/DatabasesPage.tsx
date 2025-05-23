@@ -21,7 +21,7 @@ interface DbOptionProps {
 
 function DatabaseOption({ filename, mtime, setShowDeleteDialog, setActiveFilename }: DbOptionProps) {
   const [password, setPassword] = useState("");
-
+  
   return (
     <li className="text-slate-400 px-4 h-15 relative border-mirage-600 bg-mirage-400/20 hover:bg-mirage-300/15 transition-colors duration-150 ease-in-out hover:bg-mirage-4000/25 border-y py-1.5 flex items-center justify-between">
       <button
@@ -54,9 +54,7 @@ function DatabaseOption({ filename, mtime, setShowDeleteDialog, setActiveFilenam
         className="ml-4"
         btnStyle="primary"
         onClick={() => {
-          invoke("unlock_db", { filename, password }).then((result) => {
-            console.log(result)
-          })
+          invoke("unlock_db", { filename, password }).catch(error => console.warn(error))
         }}
       >
         Unlock
@@ -215,12 +213,12 @@ export default function DatabasesPage() {
               </h3>
               <input
                 value={createFilename}
-                onInput={(e) => setCreateFilename(e.currentTarget.value)}
+                onChange={(e) => setCreateFilename(e.currentTarget.value)}
                 type="text"
                 placeholder="Your database name"
                 class="hover:border-primary border  border-slate-900 focus:bg-mirage-900/60 bg-mirage-300/20 w-full transition-colors duration-150 px-2 rounded outline-1 outline-slate-900 text-slate-300/80 focus:outline-2 focus:stroke-primary focus:outline-primary py-1"
               />
-              <h3 class="text-slate-400 text-lg relative w-full mb-6 mt-10">
+              <h3 class="text-slate-400 relative w-full mb-6 mt-10">
                 <span class="text-sm text-slate-600 absolute -top-6 -left-0.5">Password</span>
                 <PasswordInput
                   value={createPassword}

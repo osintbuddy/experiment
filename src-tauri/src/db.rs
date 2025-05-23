@@ -16,7 +16,7 @@ use crate::{db, errs, DbState};
 
 #[derive(Deserialize, Serialize)]
 pub struct File {
-    name: String,
+    filepath: String,
     mtime: u128
 }
 
@@ -39,27 +39,25 @@ pub async fn get_db(filepath: &str, password: &str) -> Result<Pool<Sqlite>, sqlx
 }
 
 #[tauri::command]
-pub fn ls_dbs() -> Vec<File>  {
+pub fn list_dbs() -> Vec<File>  {
     let mut files: Vec<File> = Vec::new();
     let glob_path = db::get_data_path() + "*.db";
     for file in glob(&glob_path).expect("Failed to read glob pattern") {
         let file_str = file.unwrap().display().to_string();
         files.push(File {
-            name: file_str.clone(),
+            filepath: file_str.clone(),
             mtime: file_modified_time_in_seconds(file_str.as_str())
         });
     }
     return files;
 }
 
-async fn handle_migration(conn: &Pool<Sqlite>) -> Result<(), std::string::String> {
+async fn handle_migration(conn: &Pool<Sqlite>) -> Result<(), MigrateError> {
     let migrator_result = sqlx::migrate::Migrator::new(Path::new("./src/migrations")).await;
     let migrator = migrator_result.unwrap_or_else(|error| {
         panic!("Problem creating the migrator: {error:?}")
     });
-    migrator.run(conn).await.map_err(|err| {
-        err.to_string()
-    })
+    migrator.run(conn).await
 }
 
 #[tauri::command]
@@ -68,14 +66,28 @@ pub async fn unlock_db(filepath: String, password: String, app: AppHandle) -> Re
     let mut state = state.lock().await;
     state.dbpath = filepath;
     state.password = password;
-    let conn = db::get_db(&state.dbpath, &state.password).await.expect("error unlocking db");
-    handle_migration(&conn).await
+    let migrate_result: Result<_, std::string::String> = match db::get_db(&state.dbpath, &state.password).await {
+        Ok(conn) => {
+            Ok(handle_migration(&conn).await)
+        },
+            
+        Err(error) => Err(error.to_string()) 
+    };
+    return migrate_result.expect("migration error").map_err(|err| {
+        match err {
+            MigrateError::Execute(_) => "Incorrect password. Please try again".to_string(),
+            error => error.to_string(),
+        }
+    })
 }
 
 #[tauri::command]
-pub async fn create_db(filename: String, password: String) {
+pub async fn create_db(filename: String, password: String) -> Result<(), std::string::String>{
     let db_path = get_data_path() + &filename + ".db";
-    db::get_db(&db_path, &password).await.expect("Error creating db");
+    match db::get_db(&db_path, &password).await {
+        Ok(_) => Ok(()),
+        Err(error) => Err(error.to_string()),
+    }
 }
 
 #[tauri::command]

@@ -29,7 +29,7 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             venv::run_transform,
-            db::ls_dbs,
+            db::list_dbs,
             db::unlock_db,
             db::delete_db,
             db::create_db

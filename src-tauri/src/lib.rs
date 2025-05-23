@@ -1,5 +1,4 @@
 use tauri_plugin_store::StoreExt;
-use tauri::State;
 use tokio::sync::Mutex;
 
 mod venv;
@@ -32,7 +31,9 @@ pub fn run() {
             db::list_dbs,
             db::unlock_db,
             db::delete_db,
-            db::create_db
+            db::create_db,
+            queries::select_graphs,
+            queries::insert_graph,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

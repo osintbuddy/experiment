@@ -14,6 +14,7 @@ enum ErrorKind {
   Io(String),
   Utf8(String),
 }
+// TODO: Replace the above error entries with more appropriate ones here
 
 impl serde::Serialize for Error {
   fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>

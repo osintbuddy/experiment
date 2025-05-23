@@ -1,6 +1,6 @@
 use dirs;
 use sqlx::migrate::MigrateError;
-use tauri::{AppHandle, Manager, State};
+use tauri::{AppHandle, Manager};
 use tokio::sync::Mutex;
 use std::fs;
 use std::path::Path;
@@ -20,7 +20,6 @@ pub struct File {
     mtime: u128
 }
 
-
 pub fn get_data_path() -> String {
     let data_dir = dirs::data_local_dir().unwrap();
     format!("{}/osintbuddy/", &data_dir.to_str().unwrap().to_string())
@@ -38,7 +37,7 @@ pub async fn get_db(filepath: &str, password: &str) -> Result<Pool<Sqlite>, sqlx
     }
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub fn list_dbs() -> Vec<File>  {
     let mut files: Vec<File> = Vec::new();
     let glob_path = db::get_data_path() + "*.db";
@@ -60,7 +59,7 @@ async fn handle_migration(conn: &Pool<Sqlite>) -> Result<(), MigrateError> {
     migrator.run(conn).await
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub async fn unlock_db(filepath: String, password: String, app: AppHandle) -> Result<(), std::string::String> {
     let state = app.state::<Mutex<DbState>>();
     let mut state = state.lock().await;
@@ -70,7 +69,6 @@ pub async fn unlock_db(filepath: String, password: String, app: AppHandle) -> Re
         Ok(conn) => {
             Ok(handle_migration(&conn).await)
         },
-            
         Err(error) => Err(error.to_string()) 
     };
     return migrate_result.expect("migration error").map_err(|err| {
@@ -81,7 +79,7 @@ pub async fn unlock_db(filepath: String, password: String, app: AppHandle) -> Re
     })
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub async fn create_db(filename: String, password: String) -> Result<(), std::string::String>{
     let db_path = get_data_path() + &filename + ".db";
     match db::get_db(&db_path, &password).await {

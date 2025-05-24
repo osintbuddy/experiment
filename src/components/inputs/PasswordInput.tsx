@@ -14,14 +14,16 @@ export default function PasswordInput(props: PasswordInputProps) {
       <input
         {...props}
         type={hidePassword}
-        className={` hover:border-primary border  border-slate-800 focus:bg-mirage-900/60 from-mirage-300/20 to-mirage-400/20 bg-linear-to-br transition-colors duration-150 px-2 rounded outline-1 outline-slate-900 focus:outline-2  focus:outline-primary py-1 border-r-none w-64 ${className ?? ''}`}
+        className={` hover:border-primary border border-slate-800 focus:bg-mirage-900 from-mirage-300/20 to-mirage-400/20 bg-linear-to-br transition-colors duration-75 ease-in-out px-2 rounded outline-1 outline-slate-900 focus:outline-2  focus:outline-primary py-1 border-r-none w-64 ${className ?? ''}`}
       />
       <button
-        className=" text-slate-600 w-0"
-        onClick={() => setHidePassword(hidePassword === "password" ? "text" : "password") }>
+        type="button"
+        onClick={() => setHidePassword(hidePassword === "password" ? "text" : "password")}
+        className="text-slate-600 w-0"
+      >
         {
-          hidePassword === "password" 
-            ? <EyeIcon className="h-5 relative -left-7 scale-100 hover:scale-110 rotate-0 hover:rotate-5" /> 
+          hidePassword === "password"
+            ? <EyeIcon className="h-5 relative -left-7 scale-100 rotate-0 hover:rotate-5 hover:scale-110" /> 
             : <EyeSlashIcon className="h-5 relative -left-7 rotate-0 hover:rotate-5 scale-100 hover:scale-110" />
         }
       </button>

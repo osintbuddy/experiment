@@ -14,7 +14,7 @@ export default function FileInput(props: InputProps) {
       <input
         {...props}
         type="text"
-        class="hover:border-primary border border-slate-900 bg-mirage-300/20 w-full transition-colors duration-150 px-2 rounded-l border-r-0  outline-1 outline-slate-900 focus:outline-2 focus:outline-primary py-1 -mr-0.5 focus:bg-mirage-900 text-slate-300/80"
+        class="hover:border-primary border border-slate-900 bg-mirage-300/20 w-full transition-colors duration-75 ease-in-out px-2 rounded-l border-r-0  outline-1 outline-slate-900 focus:outline-2 focus:outline-primary py-1 -mr-0.5 focus:bg-mirage-900 text-slate-300/80"
       />
       <button
         onClick={() => onBtnClick()}

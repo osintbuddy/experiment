@@ -1,11 +1,10 @@
 import { LockClosedIcon, QuestionMarkCircleIcon, ExclamationTriangleIcon, KeyIcon, TrashIcon } from "@heroicons/react/20/solid";
 import { open } from '@tauri-apps/plugin-dialog';
-import { useState } from "preact/hooks";
+import { Dispatch, StateUpdater, useState } from "preact/hooks";
 import { invoke } from "@tauri-apps/api/core";
 import { Description, Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
-import { useNavigate } from "react-router-dom";
-import type { NavigateFunction } from "react-router-dom"
-import FileInput from "../components/inputs/DirectoryInput";
+import { useNavigate, NavigateFunction } from "react-router-dom";
+import FileInput from "../components/inputs/FileInput";
 import Button from "../components/buttons/Button";
 import GhostButton from "../components/buttons/GhostButton";
 import { useMountEffect } from "../app/hooks";
@@ -17,23 +16,24 @@ import { toast } from "react-toastify";
 interface DbOptionProps {
   filepath: string
   mtime: string
-  setShowDeleteDialog: Function
-  setActiveFilename: Function
+  setShowDeleteDialog: Dispatch<StateUpdater<boolean>>
+  setActiveFilename: Dispatch<StateUpdater<string>>
   navigate:  NavigateFunction
 }
 
 function DatabaseOption({ filepath, mtime, setShowDeleteDialog, setActiveFilename, navigate }: DbOptionProps) {
+  const filename = filepath.split("/").pop();
 
   const onSubmit = (e) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget);
     const password = formData.get("password");
-    invoke("unlock_db", { filepath, password })
-      .then((wtf) => {
-        console.log(wtf, filepath, password)
-        navigate("/dashboard")
-      })
-      .catch(error => toast.error(error))
+
+    if (password) {
+      invoke("unlock_db", { filepath, password })
+        .then(() =>  navigate("/dashboard"))
+        .catch(error => toast.error(error))
+    } else toast.error(`Please enter a password to unlock ${filename}`)
   }
   return (
     <li className="text-slate-400 px-4 h-15 relative border-mirage-600 bg-mirage-400/20 hover:bg-mirage-300/15 transition-colors duration-150 ease-in-out hover:bg-mirage-4000/25 border-y py-1.5 flex items-center justify-between">
@@ -50,7 +50,7 @@ function DatabaseOption({ filepath, mtime, setShowDeleteDialog, setActiveFilenam
         <span class="text-sm text-slate-600 absolute -top-4 -left-0.5">
           Filename
         </span>
-        {filepath.split("/").pop()}
+        {filename}
       </h3>
       <h3 class="text-slate-400 w-64 text-lg relative top-2">
         <span class="text-sm text-slate-600 absolute -top-4 -left-0.5">
@@ -69,6 +69,7 @@ function DatabaseOption({ filepath, mtime, setShowDeleteDialog, setActiveFilenam
         <GhostButton
           className="ml-4"
           btnStyle="primary"
+          type="submit"
         >
           Unlock
           <KeyIcon className="btn-icon" />
@@ -101,7 +102,8 @@ export default function DatabasesPage() {
 
   const [createPassword, setCreatePassword] = useState("")
   const [createFilename, setCreateFilename] = useState("")
-  const [activeFilename, setActiveFilename] = useState("");
+  const [activeFilename, setActiveFilename] = useState("")
+
   return (
     <>
       <main className="mt-40 flex items-center w-full flex-col h-full relative ">

@@ -73,7 +73,7 @@ pub async fn unlock_db(filepath: String, password: String, app: AppHandle) -> Re
     };
     return migrate_result.expect("migration error").map_err(|err| {
         match err {
-            MigrateError::Execute(_) => "Incorrect password. Please try again".to_string(),
+            MigrateError::Execute(_) => "Unlock failed. Please enter the correct password".to_string(),
             error => error.to_string(),
         }
     })

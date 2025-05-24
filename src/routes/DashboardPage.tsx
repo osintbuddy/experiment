@@ -9,7 +9,6 @@ export default function DashboardPage() {
   
   useMountEffect(() => {
     invoke("select_graphs", { offset: 0 }).then((data: object[]) => {
-      console.log('graphs', data)
       setGraphs(data)
     }).catch(err => console.warn(err))
   })

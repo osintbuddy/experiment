@@ -7,8 +7,6 @@ export default function PublicLayout(): JSX.Element {
     <>
       <Outlet />
       <PublicNavbar />
-='light'
-      />
     </>
   );
 }
